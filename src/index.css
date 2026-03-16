@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: #0A0A0A;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF007F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFD700;
+}
+
+.glass-morphic {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.neon-glow-pink {
+  text-shadow: 0 0 10px #FF007F, 0 0 20px #FF007F;
+}
+
+.neon-glow-cyan {
+  text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF;
+}
+
+.torn-edge {
+  clip-path: polygon(0% 5%, 5% 0%, 95% 0%, 100% 5%,
+      100% 95%, 95% 100%, 5% 100%, 0% 95%,
+      2% 80%, 0% 60%, 3% 40%, 1% 20%);
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+.ticket-torn-edge {
+  -webkit-mask-image: linear-gradient(to right, black 95%, transparent 100%),
+    radial-gradient(circle at 100% 50%, transparent 10px, black 11px);
+  mask-image: linear-gradient(to right, black 95%, transparent 100%),
+    radial-gradient(circle at 100% 50%, transparent 10px, black 11px);
+  -webkit-mask-size: 100% 100%, 20px 40px;
+  mask-size: 100% 100%, 20px 40px;
+  -webkit-mask-position: 0 0, 100% 0;
+  mask-position: 0 0, 100% 0;
+  -webkit-mask-repeat: no-repeat, repeat-y;
+  mask-repeat: no-repeat, repeat-y;
+}
