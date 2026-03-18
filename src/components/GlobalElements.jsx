@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ticket, Megaphone, MegaphoneOff, Menu, X, ShoppingCart } from 'lucide-react';
+import { X, ShoppingCart, LogOut, User } from 'lucide-react';
 import rasrangLogo from '../assets/rasrang-logo.png';
 import AudioDirector from './AudioDirector';
 import { useClapperSnap } from '../hooks/useClapperSnap';
 
-const GlobalElements = ({ cart, removeFromCart, onCheckout }) => {
+const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [userName, setUserName] = useState('');
     const { clapProps } = useClapperSnap();
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handler = (e) => { if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setIsProfileOpen(false); };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
 
     const handleCheckout = () => {
         if (!userName.trim()) {
@@ -33,9 +41,50 @@ const GlobalElements = ({ cart, removeFromCart, onCheckout }) => {
 
                 <div className="flex gap-4 pointer-events-auto">
                     <AudioDirector />
-                    <button className="w-12 h-12 glass-morphic rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform">
-                        <Menu size={20} />
-                    </button>
+                    {/* User Avatar Dropdown */}
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            onClick={() => setIsProfileOpen(p => !p)}
+                            className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 hover:border-rasrang-cyan transition-colors"
+                        >
+                            {user?.photoURL
+                                ? <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                                : <div className="w-full h-full glass-morphic flex items-center justify-center text-white"><User size={20} /></div>
+                            }
+                        </button>
+
+                        <AnimatePresence>
+                            {isProfileOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                                    className="absolute right-0 mt-3 w-64 bg-[#111] border border-white/10 rounded-md shadow-2xl overflow-hidden z-[200]"
+                                >
+                                    {/* Profile Info */}
+                                    <div className="p-4 border-b border-white/10 flex items-center gap-3">
+                                        {user?.photoURL
+                                            ? <img src={user.photoURL} alt="avatar" className="w-10 h-10 rounded-full" />
+                                            : <div className="w-10 h-10 rounded-full bg-rasrang-pink/20 flex items-center justify-center"><User size={18} className="text-rasrang-pink" /></div>
+                                        }
+                                        <div className="overflow-hidden">
+                                            <p className="text-white font-typewriter text-sm truncate">{user?.displayName || 'User'}</p>
+                                            <p className="text-white/40 font-typewriter text-[10px] truncate">{user?.email}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Logout */}
+                                    <button
+                                        onClick={() => { setIsProfileOpen(false); onLogout(); }}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-rasrang-pink font-typewriter text-sm hover:bg-white/5 transition-colors"
+                                    >
+                                        <LogOut size={16} />
+                                        Sign Out
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </header>
 

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
+import QRCode from 'qrcode';
 import { createBooking } from './models/Booking.js';
 import { createTicket, getTicketsByBookingId } from './models/Ticket.js';
 
@@ -61,8 +62,59 @@ async function initDatabase() {
         )
     `);
 
+    await pool.execute(`
+        CREATE TABLE IF NOT EXISTS faculty_passes (
+            id VARCHAR(36) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            institution VARCHAR(255) NOT NULL,
+            department VARCHAR(255) NOT NULL,
+            designation VARCHAR(255) NOT NULL,
+            employeeId VARCHAR(100) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            mobile VARCHAR(20) NOT NULL,
+            eventsAttending TEXT NOT NULL,
+            passCode VARCHAR(50) NOT NULL UNIQUE,
+            qrCode LONGTEXT,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
     console.log('MySQL database and tables ready.');
 }
+
+// Faculty Pass registration
+app.post('/api/faculty-pass', async (req, res) => {
+    try {
+        const { name, institution, department, designation, employeeId, email, mobile, eventsAttending } = req.body;
+        if (!name || !institution || !email || !mobile) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        const { default: pool } = await import('./db.js');
+        const id = randomId();
+        const passCode = `FAC-26-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        // QR payload — encode all key details
+        const qrPayload = JSON.stringify({ passCode, name, institution, department, designation, employeeId, email, eventsAttending });
+        const qrCode = await QRCode.toDataURL(qrPayload, {
+            errorCorrectionLevel: 'H',
+            width: 300,
+            margin: 2,
+            color: { dark: '#1a0a00', light: '#f5e6c8' }
+        });
+
+        await pool.execute(
+            `INSERT INTO faculty_passes (id, name, institution, department, designation, employeeId, email, mobile, eventsAttending, passCode, qrCode)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [id, name, institution, department, designation, employeeId, email, mobile, eventsAttending, passCode, qrCode]
+        );
+
+        res.status(201).json({ passCode, qrCode, name });
+    } catch (error) {
+        console.error('Faculty pass error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 // Create a new booking
 app.post('/api/bookings', async (req, res) => {

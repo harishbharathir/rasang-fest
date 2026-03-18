@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, signOutUser } from './firebase';
+import GoogleSignIn from './components/GoogleSignIn';
 import TicketModal from './components/TicketModal';
 import CensorCertificate from './components/CensorCertificate';
 import HeroTheatre from './components/HeroTheatre';
@@ -7,26 +10,28 @@ import CulturalWall from './components/CulturalWall';
 import TechProjection from './components/TechProjection';
 import ProShowStage from './components/ProShowStage';
 import GlobalElements from './components/GlobalElements';
+import FacultyPassModal from './components/FacultyPassModal';
 import { createBooking } from './services/api';
 
 function App() {
+    const [user, setUser] = useState(undefined); // undefined = checking, null = not signed in
     const [loading, setLoading] = useState(true);
     const [isTicketOpen, setIsTicketOpen] = useState(false);
-    const [ticketData, setTicketData] = useState(null); // Can be an array of tickets or a single ticket object
+    const [ticketData, setTicketData] = useState(null);
     const [cart, setCart] = useState([]);
+    const [isFacultyPassOpen, setIsFacultyPassOpen] = useState(false);
 
     useEffect(() => {
-        // Simulate loading/censor board duration
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 4500); // Allow time for burn animation
-        return () => clearTimeout(timer);
+        const unsub = onAuthStateChanged(auth, (u) => setUser(u ?? null));
+        return unsub;
     }, []);
 
-    const handleShowTicket = (data) => {
-        setTicketData(data);
-        setIsTicketOpen(true);
-    };
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 4500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const addToCart = (event) => {
         setCart((prev) => {
@@ -49,12 +54,15 @@ function App() {
             if (result && result.tickets) {
                 setTicketData(result.tickets);
                 setIsTicketOpen(true);
-                setCart([]); // Clear cart after success
+                setCart([]);
             }
-        } catch (error) {
+        } catch {
             alert("Booking failed. Please check if the server is running.");
         }
     };
+
+    if (user === undefined) return null;
+    if (!user) return <GoogleSignIn onSignIn={setUser} />;
 
     return (
         <main className="relative bg-rasrang-black selection:bg-rasrang-pink selection:text-white">
@@ -67,16 +75,18 @@ function App() {
                     cart={cart}
                     removeFromCart={removeFromCart}
                     onCheckout={handleCheckout}
+                    user={user}
+                    onLogout={() => { signOutUser(); setUser(null); }}
                 />
 
-                {/* Scroll Narrative Container */}
                 <div className="relative">
-                    {/* Each Act is a separate scroll target */}
-                    <ActWrapper id="act1"><HeroTheatre onBook={() => addToCart({ id: 'pro', name: 'GRAND FINALE PRO SHOW' })} /></ActWrapper>
+                    <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} /></ActWrapper>
                     <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} /></ActWrapper>
                     <ActWrapper id="act3"><TechProjection onAddToCart={addToCart} /></ActWrapper>
                     <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
                 </div>
+
+                <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} />
 
                 <TicketModal
                     isOpen={isTicketOpen}
@@ -84,7 +94,6 @@ function App() {
                     tickets={Array.isArray(ticketData) ? ticketData : [ticketData]}
                 />
 
-                {/* Footer */}
                 <footer className="py-20 bg-rasrang-charcoal text-center border-t border-white/10">
                     <h2 className="text-4xl md:text-6xl font-marquee text-rasrang-yellow mb-8 tracking-widest">rasrang '26</h2>
                     <div className="flex justify-center gap-12 font-cinema text-rasrang-cyan mb-12 uppercase text-sm">

@@ -71,15 +71,7 @@ const HeroTheatre = ({ onBook }) => {
                 </button>
             </motion.div>
 
-            {/* Scroll Down Indicator */}
-            <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute bottom-8 z-10 flex flex-col items-center text-rasrang-cyan opacity-60"
-            >
-                <p className="text-xs uppercase tracking-[0.3em] font-cinema mb-2">Scroll to Enter</p>
-                <div className="w-px h-12 bg-gradient-to-b from-rasrang-cyan to-transparent"></div>
-            </motion.div>
+
         </section>
     );
 };
