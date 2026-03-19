@@ -101,18 +101,35 @@ const CulturalWall = ({ onAddToCart, user }) => {
                                         <div className="flex flex-col gap-2 items-end w-32">
                                             <button
                                                 onClick={(e) => handleRegisterClick(e, event.title)}
-                                                className="w-full px-4 py-1.5 border border-current bg-transparent text-current font-cinema text-[10px] sm:text-[11px] hover:bg-current hover:!text-black transition-all transform hover:scale-105"
+                                                className="w-full px-4 py-1.5 border border-current bg-transparent text-current font-cinema text-[10px] sm:text-[11px] hover:bg-white hover:!text-black hover:border-white transition-all transform hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.6)]"
                                             >
                                                 REGISTER NOW
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onAddToCart({ id: `cult-${event.id}`, name: event.title }); }}
-                                                className="w-full px-4 py-1.5 bg-current text-white font-cinema text-[10px] sm:text-[11px] hover:scale-105 transition-transform mix-blend-difference"
+                                                className="w-full px-4 py-1.5 bg-current text-white font-cinema text-[10px] sm:text-[11px] hover:scale-105 transition-transform mix-blend-difference relative overflow-hidden group/btn2"
                                                 style={{ filter: "invert(1)" }}
                                             >
                                                 BOOK TICKET
                                             </button>
                                         </div>
+                                    </div>
+                                    
+                                    {/* Attractive Cinema Barcode Below Items */}
+                                    <div className="mt-4 pt-2 border-t border-current/20 flex justify-center items-center opacity-70">
+                                       <div className="flex gap-[2px] h-5 items-end">
+                                            <div className="w-0.5 h-full bg-current"></div>
+                                            <div className="w-1.5 h-full bg-current"></div>
+                                            <div className="w-0.5 h-full bg-current"></div>
+                                            <div className="w-1 h-3 bg-current"></div>
+                                            <div className="w-2.5 h-full bg-current"></div>
+                                            <div className="w-0.5 h-full bg-current"></div>
+                                            <div className="w-1.5 h-full bg-current"></div>
+                                            <div className="w-1 h-4 bg-current"></div>
+                                            <div className="w-0.5 h-full bg-current"></div>
+                                            <div className="w-2 h-full bg-current"></div>
+                                       </div>
+                                       <span className="font-mono text-[9px] tracking-[0.3em] ml-3 mt-1 font-bold">ADMIT ONE</span>
                                     </div>
                                 </div>
                             </div>
