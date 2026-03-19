@@ -19,9 +19,19 @@ const TicketModal = ({ isOpen, onClose, tickets }) => {
                 const ticketElement = document.getElementById(`ticket-${i}`);
                 if (ticketElement) {
                     const canvas = await html2canvas(ticketElement, {
-                        scale: 2, // higher resolution
+                        scale: 2, 
                         useCORS: true,
-                        backgroundColor: null
+                        backgroundColor: null,
+                        onclone: (clonedDoc) => {
+                            const ticket = clonedDoc.getElementById(`ticket-${i}`);
+                            if (ticket) {
+                                // EventTicket has aspectRatio '1000 / 415'
+                                ticket.style.width = '1000px';
+                                ticket.style.height = '415px';
+                                // Ensure any nested absolute elements resolve correctly
+                                ticket.style.position = 'relative';
+                            }
+                        }
                     });
                     const imgData = canvas.toDataURL('image/png');
                     

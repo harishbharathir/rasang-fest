@@ -5,7 +5,7 @@ const CulturalTicket = ({ ticket, rollNo, event = {}, eventName = 'Cultural Even
     const uniqueId = ticket?.ticketId || 'CUL-' + rollNo.slice(-6).toUpperCase();
     
     return (
-style={{ aspectRatio: '3 / 1.4' }}
+        <div className="relative w-full bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 border-8 border-gradient-to-r from-yellow-500/50 via-orange-500/40 to-red-500/50 rounded-3xl shadow-[0_0_80px_rgba(255,165,0,0.4)] overflow-hidden backdrop-blur-xl group" style={{ aspectRatio: '3 / 1.4' }}>
             {/* Movie theater style background */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(255,215,0,0.2)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(255,140,0,0.2)_0%,transparent_50%)] opacity-90" />
             
@@ -62,9 +62,7 @@ style={{ aspectRatio: '3 / 1.4' }}
                 <div className="relative mx-auto w-28 h-28 mb-4">
                     <div className={`w-full h-full bg-gradient-to-br from-yellow-50/90 to-orange-50/90 backdrop-blur-xl rounded-2xl shadow-[0_0_30px_rgba(255,165,0,0.5)] border-4 border-yellow-400/60 p-2 flex items-center justify-center`}>
                         {ticket?.qrCode ? (
-                            <div className="relative w-full h-full rounded-xl overflow-hidden">
                             <img src={ticket.qrCode} alt="QR Verify" className="w-full h-full rounded-xl shadow-inner" style={{imageRendering: 'pixelated'}} />
-                            </div>
                         ) : (
                             <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center animate-pulse">
                                 <div className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg animate-ping" />

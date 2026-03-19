@@ -79,7 +79,16 @@ export default function FacultyPassModal({ isOpen, onClose }) {
             const canvas = await html2canvas(passElement, {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: null
+                backgroundColor: null,
+                onclone: (clonedDoc) => {
+                    const pass = clonedDoc.getElementById('faculty-pass-card');
+                    if (pass) {
+                        // Faculty pass uses a more vertical/standard card layout
+                        pass.style.width = '800px';
+                        // Keep height flexible but ensure it's not collapsed
+                        pass.style.minHeight = '400px';
+                    }
+                }
             });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('l', 'mm', 'a4');

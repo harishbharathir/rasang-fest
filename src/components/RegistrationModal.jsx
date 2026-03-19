@@ -62,7 +62,16 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
             const canvas = await html2canvas(ticketElement, {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: null
+                backgroundColor: null,
+                onclone: (clonedDoc) => {
+                    const ticket = clonedDoc.getElementById('registration-ticket');
+                    if (ticket) {
+                        // CulturalTicket has aspectRatio '3 / 1.4'
+                        ticket.style.width = '1000px';
+                        ticket.style.height = '466px';
+                        ticket.style.aspectRatio = 'auto';
+                    }
+                }
             });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('l', 'mm', 'a4');
@@ -85,6 +94,7 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
             pdf.save(`${eventName}-Ticket.pdf`);
         } catch (error) {
             console.error("Error generating PDF:", error);
+            alert("Failed to generate ticket. Please try again.");
         }
     };
 
@@ -136,19 +146,8 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
                                         className="flex flex-col items-center gap-4"
                                     >
                                         {/* Compact ticket card */}
-w-full max-w-lg">
-                                            <div
-                                                className="relative shadow-xl overflow-hidden select-none rounded-lg border border-black/20"
-                                                style={{
-                                                    aspectRatio: '1000 / 415',
-                                                    maxHeight: '140px'
-                                                }}
-                                            >
-<CulturalTicket ticket={ticket} rollNo={formData.regNo} eventName={eventName} event={{title: eventName}} />
-
-                                                <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-transparent to-black/40" />
-                                                <div className="absolute inset-0 opacity-20 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                                            </div>
+                                        <div id="registration-ticket" className="w-full max-w-lg mx-auto">
+                                            <CulturalTicket ticket={ticket} rollNo={formData.regNo} eventName={eventName} event={{title: eventName}} />
                                         </div>
 
                                         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -258,3 +257,4 @@ w-full max-w-lg">
 };
 
 export default RegistrationModal;
+

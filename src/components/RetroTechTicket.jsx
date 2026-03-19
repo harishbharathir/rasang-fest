@@ -5,7 +5,7 @@ const RetroTechTicket = ({ ticket, rollNo, event = {}, eventName = 'Tech Event' 
     const uniqueId = ticket?.ticketId || 'RSR-' + rollNo.slice(-6).toUpperCase();
     
     return (
-style={{ aspectRatio: '3 / 1.4' }}
+        <div className="relative w-full bg-gradient-to-br from-slate-900 via-gray-900 to-black border-8 border-gradient-to-r from-cyan-500/50 via-blue-500/40 to-emerald-500/50 rounded-3xl shadow-[0_0_80px_rgba(0,255,255,0.4)] overflow-hidden backdrop-blur-xl group" style={{ aspectRatio: '3 / 1.4' }}>
             {/* Enhanced Geometric + Projector background */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(0,255,255,0.2)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(34,197,94,0.2)_0%,transparent_50%),radial-gradient(circle,rgba(0,255,255,0.1)_0%,transparent_70%)] opacity-90" />
             
@@ -85,7 +85,7 @@ style={{ aspectRatio: '3 / 1.4' }}
                     </div>
                 </div>
 
-                {/* Prominent QR Code - Center bottom with scan animation */}
+                {/* Prominent QR Code */}
                 <div className="relative mx-auto w-32 h-32 mb-4 group/qr">
                     <div className={`w-full h-full bg-gradient-to-br from-white/98 to-gray-100/95 backdrop-blur-2xl rounded-3xl shadow-[0_0_30px_rgba(0,255,255,0.5)] border-4 border-${eventColor.replace('text-','')}/60 p-2.5 flex items-center justify-center transition-all group-hover/qr:scale-105 group-hover/qr:shadow-[0_0_50px_rgba(0,255,255,0.7)]`}>
                         {ticket?.qrCode ? (
