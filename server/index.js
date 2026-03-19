@@ -91,6 +91,13 @@ app.post('/api/faculty-pass', async (req, res) => {
         }
 
         const { default: pool } = await import('./db.js');
+        
+        // Check for existing faculty pass by email
+        const [existing] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ?', [email]);
+        if (existing.length > 0) {
+            return res.status(200).json(existing[0]);
+        }
+
         const id = randomId();
         const passCode = `FAC-26-${Math.floor(10000 + Math.random() * 90000)}`;
 
@@ -116,6 +123,20 @@ app.post('/api/faculty-pass', async (req, res) => {
     }
 });
 
+// Get faculty pass by email
+app.get('/api/faculty-pass/user/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { default: pool } = await import('./db.js');
+        const [rows] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ?', [email]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Not found' });
+        res.status(200).json(rows[0]);
+    } catch (error) {
+        console.error('Error fetching faculty pass:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // Create a new booking
 app.post('/api/bookings', async (req, res) => {
     try {
@@ -123,6 +144,20 @@ app.post('/api/bookings', async (req, res) => {
 
         if (!userName || !events || events.length === 0) {
             return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        // Check for existing booking by email
+        const { getBookingByEmail } = await import('./models/Booking.js');
+        const { getTicketsByBookingId } = await import('./models/Ticket.js');
+        const existingBooking = await getBookingByEmail(email);
+        
+        if (existingBooking) {
+            const tickets = await getTicketsByBookingId(existingBooking.id);
+            return res.status(200).json({
+                message: 'Existing booking found',
+                booking: existingBooking,
+                tickets: tickets
+            });
         }
 
         const bookingId = randomId();
@@ -139,6 +174,15 @@ app.post('/api/bookings', async (req, res) => {
             const ticketId = `RSG-26-${Math.floor(1000 + Math.random() * 9000)}`;
             const randomSeat = `${String.fromCharCode(65 + Math.floor(Math.random() * 10))}-${Math.floor(1 + Math.random() * 50)}`;
 
+            // Generate QR code for the ticket
+            const qrPayload = JSON.stringify({ ticketId, userName, eventName, bookingId });
+            const qrCode = await QRCode.toDataURL(qrPayload, {
+                errorCorrectionLevel: 'M',
+                width: 200,
+                margin: 1,
+                color: { dark: '#000000', light: '#ffffff' }
+            });
+
             const ticket = await createTicket({
                 id: randomId(),
                 bookingId,
@@ -148,7 +192,8 @@ app.post('/api/bookings', async (req, res) => {
                 seat: randomSeat,
                 date: 'MARCH 15-16, 2026',
                 time: '10:00 AM ONWARDS',
-                venue: 'MAIN CAMPUS GROUNDS'
+                venue: 'MAIN CAMPUS GROUNDS',
+                qrCode
             });
             savedTickets.push(ticket);
         }
@@ -172,6 +217,19 @@ app.get('/api/tickets/:bookingId', async (req, res) => {
         res.status(200).json(tickets);
     } catch (error) {
         console.error('Error fetching tickets:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Get tickets by user email
+app.get('/api/tickets/user/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { getTicketsByEmail } = await import('./models/Ticket.js');
+        const tickets = await getTicketsByEmail(email);
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error('Error fetching user tickets:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

@@ -48,6 +48,7 @@ function App() {
         try {
             const bookingData = {
                 userName,
+                email: user?.email, // Pass the logged-in user's email
                 events: cart.map(item => item.name)
             };
             const result = await createBooking(bookingData);
@@ -56,7 +57,8 @@ function App() {
                 setIsTicketOpen(true);
                 setCart([]);
             }
-        } catch {
+        } catch (error) {
+            console.error("Booking error:", error);
             alert("Booking failed. Please check if the server is running.");
         }
     };

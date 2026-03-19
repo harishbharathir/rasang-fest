@@ -35,3 +35,24 @@ export const getTickets = async (bookingId) => {
         throw error;
     }
 };
+export const getTicketsByUser = async (email) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tickets/user/${email}`);
+        if (!response.ok) throw new Error('Failed to fetch user tickets');
+        return await response.json();
+    } catch (error) {
+        console.error('API Error (getTicketsByUser):', error);
+        throw error;
+    }
+};
+
+export const getFacultyPassByUser = async (email) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/faculty-pass/user/${email}`);
+        if (!response.ok) return null; // Not found is fine
+        return await response.json();
+    } catch (error) {
+        console.error('API Error (getFacultyPassByUser):', error);
+        return null;
+    }
+};

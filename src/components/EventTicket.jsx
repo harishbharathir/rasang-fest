@@ -9,12 +9,14 @@ const EventTicket = ({
     time = "10:00 AM ONWARDS",
     venue = "MAIN CAMPUS GROUNDS",
     row = "A",
-    seat = "24"
+    seat = "24",
+    qrCode = null
 }) => {
+
     return (
         <div className="w-full max-w-[900px] mx-auto p-4 flex justify-center items-center">
             <div
-                className="relative shadow-2xl overflow-hidden select-none font-typewriter uppercase text-black bg-[#fff9ea] rounded-sm border-2 border-black/10"
+                className="relative shadow-2xl overflow-hidden select-none font-typewriter uppercase text-black rounded-sm"
                 style={{
                     width: '100%',
                     maxWidth: '900px',
@@ -79,6 +81,18 @@ const EventTicket = ({
                     <div className="absolute top-[65.5%] left-[64.5%] w-[14.5%] text-[1.2vw] md:text-[14px] text-center border-b border-black/20 text-black font-bold">
                         {ticketId?.split('-').pop() || "ID"}
                     </div>
+
+                    {/* --- QR CODE --- */}
+                    {qrCode && (
+                        <div className="absolute top-[42%] right-[5.5%] w-[13.5%] aspect-square p-[1px] bg-white/10 backdrop-blur-[1px] shadow-sm">
+                            <img 
+                                src={qrCode} 
+                                alt="Ticket QR" 
+                                className="w-full h-full object-contain mix-blend-multiply"
+                                style={{ imageRendering: 'pixelated' }}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Paper Texture Overlay for extra realism */}

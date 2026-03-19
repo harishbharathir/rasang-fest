@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const DEPARTMENTS = [
     'Computer Science & Engineering',
@@ -11,6 +13,21 @@ const DEPARTMENTS = [
     'Civil Engineering',
     'Biotechnology',
     'Other',
+];
+
+const INSTITUTIONS = [
+    'SRM TRP Engineering College',
+    'SRM IST, Trichy',
+    'SRM University, Chennai',
+    'Anna University',
+    'Other Technical Institution',
+];
+
+const EVENTS = [
+    'Pro Show (Grand Finale)',
+    'Cultural Night (Drama, Music, Dance)',
+    'Tech Expo (Hackathon, Robotics, Coding)',
+    'All Event Sessions',
 ];
 
 const inputClass = "bg-white/5 border border-white/10 focus:border-rasrang-cyan text-white p-3 outline-none transition-colors rounded-sm w-full font-typewriter";
@@ -51,6 +68,40 @@ export default function FacultyPassModal({ isOpen, onClose }) {
             setError('Failed to submit. Please check if the server is running.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownload = async () => {
+        const passElement = document.getElementById('faculty-pass-card');
+        if (!passElement) return;
+
+        try {
+            const canvas = await html2canvas(passElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: null
+            });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            
+            const drawWidth = imgWidth * ratio * 0.8;
+            const drawHeight = imgHeight * ratio * 0.8;
+            
+            const xPos = (pdfWidth - drawWidth) / 2;
+            const yPos = (pdfHeight - drawHeight) / 2;
+
+            pdf.setFillColor(17, 17, 17);
+            pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+            pdf.addImage(imgData, 'PNG', xPos, yPos, drawWidth, drawHeight);
+            pdf.save(`Faculty-Pass-${form.name}.pdf`);
+        } catch (error) {
+            console.error("Error generating PDF:", error);
         }
     };
 
@@ -96,7 +147,7 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                     className="flex flex-col items-center"
                                 >
                                     {/* Retro ticket card */}
-                                    <div className="w-full bg-[#f5e6c8] text-[#1a0a00] rounded-sm overflow-hidden shadow-[0_0_40px_rgba(255,215,0,0.2)]"
+                                    <div id="faculty-pass-card" className="w-full bg-[#f5e6c8] text-[#1a0a00] rounded-sm overflow-hidden shadow-[0_0_40px_rgba(255,215,0,0.2)]"
                                         style={{ fontFamily: 'monospace' }}>
 
                                         {/* Top strip */}
@@ -127,13 +178,13 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                             </div>
 
                                             {/* Details */}
-                                            <div className="flex flex-col justify-center gap-1 text-[#1a0a00] min-w-0">
-                                                <p className="text-lg font-bold tracking-wide uppercase truncate">{passData.name}</p>
-                                                <p className="text-xs tracking-widest uppercase text-[#1a0a00]/60">{form.designation}</p>
-                                                <div className="h-px bg-[#1a0a00]/20 my-1" />
-                                                <p className="text-xs truncate">{form.institution}</p>
-                                                <p className="text-xs text-[#1a0a00]/60">{form.department}</p>
-                                                <div className="h-px bg-[#1a0a00]/20 my-1" />
+                                            <div className="flex flex-col justify-center gap-1.5 text-[#1a0a00] min-w-0 py-1">
+                                                <p className="text-lg font-bold tracking-wide uppercase leading-tight">{passData.name}</p>
+                                                <p className="text-xs tracking-widest uppercase text-[#1a0a00]/60 leading-tight">{form.designation}</p>
+                                                <div className="h-px bg-[#1a0a00]/20 my-1.5" />
+                                                <p className="text-xs leading-tight">{form.institution}</p>
+                                                <p className="text-xs text-[#1a0a00]/60 leading-tight">{form.department}</p>
+                                                <div className="h-px bg-[#1a0a00]/20 my-1.5" />
                                                 <p className="text-[10px] tracking-[0.2em] font-bold">{passData.passCode}</p>
                                                 <p className="text-[9px] text-[#1a0a00]/50 uppercase tracking-widest">MARCH 15–16, 2026 • SRM TRICHY</p>
                                             </div>
@@ -150,12 +201,20 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                         </div>
                                     </div>
 
-                                    <button
-                                        onClick={handleClose}
-                                        className="mt-6 w-full py-3 bg-rasrang-yellow text-black font-marquee text-lg tracking-widest hover:bg-white transition-colors"
-                                    >
-                                        DONE
-                                    </button>
+                                    <div className="flex gap-4 mt-6 w-full">
+                                        <button
+                                            onClick={handleDownload}
+                                            className="flex-1 py-3 bg-white text-black font-marquee text-lg tracking-widest hover:bg-rasrang-yellow transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Download size={20} /> DOWNLOAD PDF
+                                        </button>
+                                        <button
+                                            onClick={handleClose}
+                                            className="flex-1 py-3 bg-rasrang-yellow text-black font-marquee text-lg tracking-widest hover:bg-white transition-colors"
+                                        >
+                                            DONE
+                                        </button>
+                                    </div>
                                 </motion.div>
                             ) : (
                                 /* ── FORM ── */
@@ -164,7 +223,10 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                         <input required type="text" name="name" value={form.name} onChange={set} className={inputClass} placeholder="Dr. / Prof. Full Name" />
                                     </Field>
                                     <Field label="Institution Name">
-                                        <input required type="text" name="institution" value={form.institution} onChange={set} className={inputClass} placeholder="College / University" />
+                                        <select required name="institution" value={form.institution} onChange={set} className={inputClass + " appearance-none"}>
+                                            <option value="" disabled>Select Institution</option>
+                                            {INSTITUTIONS.map(inst => <option key={inst} value={inst} className="bg-[#111]">{inst}</option>)}
+                                        </select>
                                     </Field>
                                     <div className="grid grid-cols-2 gap-4">
                                         <Field label="Department">
@@ -187,7 +249,10 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                         <input required type="tel" name="mobile" value={form.mobile} onChange={set} className={inputClass} placeholder="+91 98765 43210" pattern="[0-9+\s\-]{10,15}" />
                                     </Field>
                                     <Field label="Events / Sessions to Attend">
-                                        <textarea required name="eventsAttending" value={form.eventsAttending} onChange={set} className={inputClass + " resize-none h-20"} placeholder="e.g. Pro Show, Cultural Night, Tech Expo..." />
+                                        <select required name="eventsAttending" value={form.eventsAttending} onChange={set} className={inputClass + " appearance-none"}>
+                                            <option value="" disabled>Select Events</option>
+                                            {EVENTS.map(event => <option key={event} value={event} className="bg-[#111]">{event}</option>)}
+                                        </select>
                                     </Field>
 
                                     {error && <p className="text-rasrang-pink font-typewriter text-xs">{error}</p>}
