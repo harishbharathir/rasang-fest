@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
-import CulturalTicket from './CulturalTicket';
+import EventTicket from './EventTicket';
 import { createBooking } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -55,7 +55,7 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
     };
 
     const handleDownload = async () => {
-        const ticketElement = document.getElementById('registration-ticket');
+        const ticketElement = document.getElementById('registration-ticket-inner');
         if (!ticketElement) return;
 
         try {
@@ -64,11 +64,11 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
                 useCORS: true,
                 backgroundColor: null,
                 onclone: (clonedDoc) => {
-                    const ticket = clonedDoc.getElementById('registration-ticket');
+                    const ticket = clonedDoc.getElementById('registration-ticket-inner');
                     if (ticket) {
-                        // CulturalTicket has aspectRatio '3 / 1.4'
+                        // EventTicket has aspectRatio '1000 / 415'
                         ticket.style.width = '1000px';
-                        ticket.style.height = '466px';
+                        ticket.style.height = '415px';
                         ticket.style.aspectRatio = 'auto';
                     }
                 }
@@ -118,13 +118,13 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="relative z-10 w-full max-w-md bg-[#111] border border-white/10 shadow-2xl rounded-xl overflow-hidden flex flex-col max-h-[85vh]"
+                        className="relative z-10 w-full max-w-2xl bg-[#111] border border-white/10 shadow-2xl rounded-xl overflow-hidden flex flex-col max-h-[85vh]"
                     >
                         {/* Header */}
                         <div className="flex justify-between items-center p-5 border-b border-white/10 bg-gradient-to-r from-black/80 to-black/50 shrink-0">
                             <div>
                                 <h3 className="text-rasrang-yellow font-marquee text-xl tracking-widest uppercase">
-                                    {submitted ? 'GOLDEN TICKET' : 'EVENT REG'}
+                                    {submitted ? 'YOUR GOLDEN TICKET' : 'EVENT REGISTRATION'}
                                 </h3>
                                 <p className="font-mono text-rasrang-cyan/80 text-xs mt-1 uppercase tracking-wider">
                                     {eventName}
@@ -146,8 +146,16 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
                                         className="flex flex-col items-center gap-4"
                                     >
                                         {/* Compact ticket card */}
-                                        <div id="registration-ticket" className="w-full max-w-lg mx-auto">
-                                            <CulturalTicket ticket={ticket} rollNo={formData.regNo} eventName={eventName} event={{title: eventName}} />
+                                        <div id="registration-ticket-inner" className="w-full mx-auto">
+                                            <EventTicket 
+                                                userName={formData.name}
+                                                eventName={eventName}
+                                                ticketId={ticket?.ticketId}
+                                                qrCode={ticket?.qrCode}
+                                                venue={formData.institution}
+                                                date="MARCH 15-16, 2026"
+                                                time="10:00 AM ONWARDS"
+                                            />
                                         </div>
 
                                         <div className="flex flex-col gap-3 w-full max-w-xs">

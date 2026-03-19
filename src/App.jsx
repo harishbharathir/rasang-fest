@@ -12,13 +12,13 @@ import TechProjection from './components/TechProjection';
 import ProShowStage from './components/ProShowStage';
 import GlobalElements from './components/GlobalElements';
 import FacultyPassModal from './components/FacultyPassModal';
-import { createBooking } from './services/api';
+import { createBooking, getTicketsByUser, getFacultyPassByUser } from './services/api';
 
 function App() {
     const [user, setUser] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const [isTicketOpen, setIsTicketOpen] = useState(false);
-    const [ticketData, setTicketData] = useState(null);
+    const [ticketData, setTicketData] = useState([]);
     const [cart, setCart] = useState([]);
     const [isFacultyPassOpen, setIsFacultyPassOpen] = useState(false);
     const [isBookTicketOpen, setIsBookTicketOpen] = useState(false);
@@ -66,6 +66,41 @@ function App() {
         }
     };
 
+    const handleViewTickets = async () => {
+        if (!user?.email) return;
+        try {
+            const [tickets, facultyPass] = await Promise.all([
+                getTicketsByUser(user.email),
+                getFacultyPassByUser(user.email)
+            ]);
+
+            const allTickets = [...(Array.isArray(tickets) ? tickets : [])];
+            
+            if (facultyPass) {
+                allTickets.push({
+                    userName: facultyPass.name,
+                    eventName: "FACULTY PASS",
+                    ticketId: facultyPass.passCode,
+                    qrCode: facultyPass.qrCode,
+                    venue: `${facultyPass.institution} | ${facultyPass.department}`,
+                    date: "MARCH 15-16, 2026",
+                    time: "ALL FEST SESSIONS"
+                });
+            }
+
+            if (allTickets.length === 0) {
+                alert("No tickets found for your email.");
+                return;
+            }
+
+            setTicketData(allTickets);
+            setIsTicketOpen(true);
+        } catch (error) {
+            console.error("Error fetching tickets:", error);
+            alert("Failed to fetch your tickets. Please try again.");
+        }
+    };
+
     if (user === undefined) return null;
     if (!user) return <GoogleSignIn onSignIn={setUser} />;
 
@@ -80,6 +115,7 @@ function App() {
                     cart={cart}
                     removeFromCart={removeFromCart}
                     onCheckout={handleCheckout}
+                    onViewTickets={handleViewTickets}
                     user={user}
                     onLogout={() => { signOutUser(); setUser(null); }}
                 />

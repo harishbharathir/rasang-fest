@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingCart, LogOut, User } from 'lucide-react';
+import { X, ShoppingCart, LogOut, User, Ticket } from 'lucide-react';
 import rasrangLogo from '../assets/rasrang-logo.png';
 import AudioDirector from './AudioDirector';
 import { useClapperSnap } from '../hooks/useClapperSnap';
 
-const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout }) => {
+const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout, onViewTickets }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [userName, setUserName] = useState('');
@@ -72,6 +72,15 @@ const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout }) =>
                                             <p className="text-white/40 font-typewriter text-[10px] truncate">{user?.email}</p>
                                         </div>
                                     </div>
+
+                                    {/* My Tickets */}
+                                    <button
+                                        onClick={() => { setIsProfileOpen(false); onViewTickets(); }}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-rasrang-cyan font-typewriter text-sm hover:bg-white/5 transition-colors border-b border-white/5"
+                                    >
+                                        <Ticket size={16} />
+                                        My Tickets
+                                    </button>
 
                                     {/* Logout */}
                                     <button

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
-import RetroTechTicket from './RetroTechTicket';
+import EventTicket from './EventTicket';
 import { createBooking } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -52,7 +52,7 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
     };
 
     const handleDownload = async () => {
-        const ticketElement = document.getElementById('book-ticket');
+        const ticketElement = document.getElementById('book-ticket-inner');
         if (!ticketElement) return;
 
         try {
@@ -61,16 +61,12 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
                 useCORS: true, 
                 backgroundColor: null,
                 onclone: (clonedDoc) => {
-                    const ticket = clonedDoc.getElementById('book-ticket');
+                    const ticket = clonedDoc.getElementById('book-ticket-inner');
                     if (ticket) {
-                        // Force fixed dimensions for stable layout during capture
+                        // EventTicket has aspectRatio '1000 / 415'
                         ticket.style.width = '1000px';
-                        ticket.style.height = '466px'; // 1000 * (1.4/3)
+                        ticket.style.height = '415px';
                         ticket.style.aspectRatio = 'auto';
-                        
-                        // Disable animations that might interfere
-                        const animations = ticket.querySelectorAll('.animate-scanline, .animate-flicker');
-                        animations.forEach(el => el.style.animation = 'none');
                     }
                 }
             });
@@ -84,7 +80,7 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
             const imgHeight = (imgWidth * canvas.height) / canvas.width;
             
             pdf.addImage(imgData, 'PNG', (width - imgWidth) / 2, (height - imgHeight) / 2, imgWidth, imgHeight);
-            pdf.save(`${event.title.replace(/\s+/g, '_')}_projection_ticket.pdf`);
+            pdf.save(`${event.title.replace(/\s+/g, '_')}_ticket.pdf`);
         } catch (error) {
             console.error("Download error:", error);
             alert("Failed to generate ticket. Please try again.");
@@ -111,13 +107,13 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative z-10 w-full max-w-md bg-gradient-to-b from-gray-900/95 to-black border-4 border-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-3xl shadow-2xl max-h-[95vh] overflow-hidden"
+                        className="relative z-10 w-full max-w-2xl bg-gradient-to-b from-gray-900/95 to-black border-4 border-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-3xl shadow-2xl max-h-[95vh] overflow-hidden"
                     >
                         {/* Header */}
                         <div className="p-6 border-b-2 border-white/20 bg-black/60 backdrop-blur-sm flex items-center justify-between">
                             <div>
                                 <h3 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent drop-shadow-lg">
-                                    PROJECTION TICKET
+                                    {submitted ? 'YOUR TICKET' : 'EVENT REGISTRATION'}
                                 </h3>
                                 <p className={`text-lg font-bold mt-1 ${event.color} drop-shadow-md`}>{event.title}</p>
                                 <p className="text-sm text-gray-400 font-mono">{event.subtitle}</p>
@@ -136,12 +132,15 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
                                     className="space-y-6 text-center"
                                 >
                                     {/* Enhanced ticket preview */}
-                                    <div id="book-ticket" className="mx-auto w-full max-w-lg relative">
-                                        <RetroTechTicket 
-                                            ticket={ticket} 
-                                            rollNo={formData.rollNo} 
-                                            event={event}
+                                    <div id="book-ticket-inner" className="mx-auto w-full relative">
+                                        <EventTicket 
+                                            userName={formData.name}
                                             eventName={event.title}
+                                            ticketId={ticket?.ticketId}
+                                            qrCode={ticket?.qrCode}
+                                            date={event.date || "MARCH 15-16, 2026"}
+                                            time={event.time || "10:00 AM ONWARDS"}
+                                            venue={event.venue || "PROJECTION ROOM"}
                                         />
                                     </div>
                                     

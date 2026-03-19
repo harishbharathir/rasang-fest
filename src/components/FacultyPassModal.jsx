@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
+import EventTicket from './EventTicket';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -72,7 +73,7 @@ export default function FacultyPassModal({ isOpen, onClose }) {
     };
 
     const handleDownload = async () => {
-        const passElement = document.getElementById('faculty-pass-card');
+        const passElement = document.getElementById('faculty-pass-card-inner');
         if (!passElement) return;
 
         try {
@@ -81,12 +82,12 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                 useCORS: true,
                 backgroundColor: null,
                 onclone: (clonedDoc) => {
-                    const pass = clonedDoc.getElementById('faculty-pass-card');
+                    const pass = clonedDoc.getElementById('faculty-pass-card-inner');
                     if (pass) {
-                        // Faculty pass uses a more vertical/standard card layout
-                        pass.style.width = '800px';
-                        // Keep height flexible but ensure it's not collapsed
-                        pass.style.minHeight = '400px';
+                        // EventTicket has aspectRatio '1000 / 415'
+                        pass.style.width = '1000px';
+                        pass.style.height = '415px';
+                        pass.style.aspectRatio = 'auto';
                     }
                 }
             });
@@ -99,8 +100,8 @@ export default function FacultyPassModal({ isOpen, onClose }) {
             const imgHeight = canvas.height;
             const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
             
-            const drawWidth = imgWidth * ratio * 0.8;
-            const drawHeight = imgHeight * ratio * 0.8;
+            const drawWidth = imgWidth * ratio * 0.9;
+            const drawHeight = imgHeight * ratio * 0.9;
             
             const xPos = (pdfWidth - drawWidth) / 2;
             const yPos = (pdfHeight - drawHeight) / 2;
@@ -134,7 +135,7 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="relative z-10 w-full max-w-lg bg-[#111] border border-white/10 shadow-2xl rounded-md overflow-hidden max-h-[90vh] flex flex-col"
+                        className="relative z-10 w-full max-w-2xl bg-[#111] border border-white/10 shadow-2xl rounded-md overflow-hidden max-h-[90vh] flex flex-col"
                     >
                         {/* Header */}
                         <div className="flex justify-between items-center p-6 border-b border-white/10 bg-white/5 shrink-0">
@@ -149,65 +150,23 @@ export default function FacultyPassModal({ isOpen, onClose }) {
 
                         <div className="p-6 md:p-8 overflow-y-auto">
                             {passData ? (
-                                /* ── SUCCESS: Retro QR Pass ── */
+                                /* ── SUCCESS: EventTicket based Pass ── */
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     className="flex flex-col items-center"
                                 >
-                                    {/* Retro ticket card */}
-                                    <div id="faculty-pass-card" className="w-full bg-[#f5e6c8] text-[#1a0a00] rounded-sm overflow-hidden shadow-[0_0_40px_rgba(255,215,0,0.2)]"
-                                        style={{ fontFamily: 'monospace' }}>
-
-                                        {/* Top strip */}
-                                        <div className="bg-[#1a0a00] text-[#f5e6c8] px-4 py-2 flex justify-between items-center">
-                                            <span className="text-xs tracking-[0.3em] uppercase">rasrang '26</span>
-                                            <span className="text-xs tracking-widest">FACULTY PASS</span>
-                                        </div>
-
-                                        {/* Perforation line */}
-                                        <div className="flex items-center px-2 py-1">
-                                            {[...Array(36)].map((_, i) => (
-                                                <div key={i} className="flex-1 h-px bg-[#1a0a00]/20 mx-px" />
-                                            ))}
-                                        </div>
-
-                                        <div className="px-6 pb-6 pt-2 flex gap-6">
-                                            {/* QR Code — retro sepia toned */}
-                                            <div className="shrink-0 flex flex-col items-center gap-2">
-                                                <div className="border-4 border-[#1a0a00] p-1 bg-[#f5e6c8]">
-                                                    <img
-                                                        src={passData.qrCode}
-                                                        alt="Faculty QR"
-                                                        className="w-28 h-28"
-                                                        style={{ imageRendering: 'pixelated', filter: 'sepia(0.4) contrast(1.2)' }}
-                                                    />
-                                                </div>
-                                                <span className="text-[9px] tracking-widest text-[#1a0a00]/60 uppercase">scan to verify</span>
-                                            </div>
-
-                                            {/* Details */}
-                                            <div className="flex flex-col justify-center gap-1.5 text-[#1a0a00] min-w-0 py-1">
-                                                <p className="text-lg font-bold tracking-wide uppercase leading-tight">{passData.name}</p>
-                                                <p className="text-xs tracking-widest uppercase text-[#1a0a00]/60 leading-tight">{form.designation}</p>
-                                                <div className="h-px bg-[#1a0a00]/20 my-1.5" />
-                                                <p className="text-xs leading-tight">{form.institution}</p>
-                                                <p className="text-xs text-[#1a0a00]/60 leading-tight">{form.department}</p>
-                                                <div className="h-px bg-[#1a0a00]/20 my-1.5" />
-                                                <p className="text-[10px] tracking-[0.2em] font-bold">{passData.passCode}</p>
-                                                <p className="text-[9px] text-[#1a0a00]/50 uppercase tracking-widest">MARCH 15–16, 2026 • SRM TRICHY</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Bottom perforation */}
-                                        <div className="flex items-center px-2">
-                                            {[...Array(36)].map((_, i) => (
-                                                <div key={i} className="flex-1 h-px bg-[#1a0a00]/20 mx-px" />
-                                            ))}
-                                        </div>
-                                        <div className="bg-[#1a0a00] text-[#f5e6c8] px-4 py-2 text-center">
-                                            <span className="text-[9px] tracking-[0.4em] uppercase opacity-60">Grand Cultural Fest • Admit One • Non-Transferable</span>
-                                        </div>
+                                    {/* Event ticket component */}
+                                    <div id="faculty-pass-card-inner" className="w-full">
+                                        <EventTicket 
+                                            userName={passData.name}
+                                            eventName="FACULTY PASS"
+                                            ticketId={passData.passCode}
+                                            qrCode={passData.qrCode}
+                                            venue={`${form.institution} | ${form.department}`}
+                                            date="MARCH 15-16, 2026"
+                                            time="ALL FEST SESSIONS"
+                                        />
                                     </div>
 
                                     <div className="flex gap-4 mt-6 w-full">
