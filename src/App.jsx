@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, signOutUser } from './firebase';
 import GoogleSignIn from './components/GoogleSignIn';
 import TicketModal from './components/TicketModal';
+import BookTicketModal from './components/BookTicketModal';
 import CensorCertificate from './components/CensorCertificate';
 import HeroTheatre from './components/HeroTheatre';
 import CulturalWall from './components/CulturalWall';
@@ -14,12 +15,14 @@ import FacultyPassModal from './components/FacultyPassModal';
 import { createBooking } from './services/api';
 
 function App() {
-    const [user, setUser] = useState(undefined); // undefined = checking, null = not signed in
+    const [user, setUser] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const [isTicketOpen, setIsTicketOpen] = useState(false);
     const [ticketData, setTicketData] = useState(null);
     const [cart, setCart] = useState([]);
     const [isFacultyPassOpen, setIsFacultyPassOpen] = useState(false);
+    const [isBookTicketOpen, setIsBookTicketOpen] = useState(false);
+    const [currentEvent, setCurrentEvent] = useState(null);
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (u) => setUser(u ?? null));
@@ -48,7 +51,7 @@ function App() {
         try {
             const bookingData = {
                 userName,
-                email: user?.email, // Pass the logged-in user's email
+                email: user?.email,
                 events: cart.map(item => item.name)
             };
             const result = await createBooking(bookingData);
@@ -84,12 +87,16 @@ function App() {
                 <div className="relative">
                     <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} /></ActWrapper>
                     <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} /></ActWrapper>
-                    <ActWrapper id="act3"><TechProjection onAddToCart={addToCart} /></ActWrapper>
+                    <ActWrapper id="act3"><TechProjection onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }} /></ActWrapper>
                     <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
                 </div>
 
                 <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} />
-
+                <BookTicketModal 
+                    isOpen={isBookTicketOpen} 
+                    onClose={() => setIsBookTicketOpen(false)} 
+                    event={currentEvent} 
+                />
                 <TicketModal
                     isOpen={isTicketOpen}
                     onClose={() => setIsTicketOpen(false)}

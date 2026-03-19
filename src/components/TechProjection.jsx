@@ -1,100 +1,134 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Code, Database, Terminal } from 'lucide-react';
 import projectorRoom from '../assets/projector-room.jpg';
 
 const techEvents = [
-    { id: 1, title: 'SYNTAX ERROR', subtitle: 'A BUG IN THE MATRIX', category: 'Hackathon', color: 'text-green-500', bg: 'bg-[#0a0a0a]', border: 'border-green-600', img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop', isDark: true },
-    { id: 2, title: 'BOT WARS', subtitle: 'RISE OF THE MACHINES', category: 'Robotics', color: 'text-orange-500', bg: 'bg-[#1c1917]', border: 'border-orange-600', img: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop', isDark: true },
-    { id: 3, title: 'DATA HEIST', subtitle: 'THE PERFECT SCORE', category: 'Analytics', color: 'text-blue-500', bg: 'bg-[#0f172a]', border: 'border-blue-600', img: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop', isDark: true },
-    { id: 4, title: 'TERMINAL X', subtitle: 'NO WAY OUT', category: 'Coding', color: 'text-red-500', bg: 'bg-[#27272a]', border: 'border-red-700', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop', isDark: true },
+    { 
+        id: 1, 
+        name: 'syntax-error', 
+        title: 'SYNTAX ERROR', 
+        subtitle: 'A BUG IN THE MATRIX', 
+        category: 'Hackathon', 
+        color: 'text-green-500', 
+        bg: 'bg-[#0a0a0a]', 
+        border: 'border-green-600', 
+        img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop', 
+        isDark: true 
+    },
+    { 
+        id: 2, 
+        name: 'bot-wars', 
+        title: 'BOT WARS', 
+        subtitle: 'RISE OF THE MACHINES', 
+        category: 'Robotics', 
+        color: 'text-orange-500', 
+        bg: 'bg-[#1c1917]', 
+        border: 'border-orange-600', 
+        img: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop', 
+        isDark: true 
+    },
+    { 
+        id: 3, 
+        name: 'data-heist', 
+        title: 'DATA HEIST', 
+        subtitle: 'THE PERFECT SCORE', 
+        category: 'Analytics', 
+        color: 'text-blue-500', 
+        bg: 'bg-[#0f172a]', 
+        border: 'border-blue-600', 
+        img: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop', 
+        isDark: true 
+    },
+    { 
+        id: 4, 
+        name: 'terminal-x', 
+        title: 'TERMINAL X', 
+        subtitle: 'NO WAY OUT', 
+        category: 'Coding', 
+        color: 'text-red-500', 
+        bg: 'bg-[#27272a]', 
+        border: 'border-red-700', 
+        img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop', 
+        isDark: true 
+    },
 ];
 
-const TechProjection = ({ onAddToCart }) => {
+const TechProjection = ({ onBookTicket }) => {
     return (
-        <section className="relative min-h-screen bg-black flex flex-col justify-center py-20 overflow-hidden">
+        <section className="relative min-h-[80vh] bg-black flex flex-col justify-center py-16 md:py-20 overflow-hidden">
             {/* Projector Beam Effect */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-full bg-[conic-gradient(from_180deg_at_50%_0%,_rgba(0,255,255,0.1)_0deg,_transparent_20deg,_transparent_340deg,_rgba(0,255,255,0.1)_360deg)] pointer-events-none z-0"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-full bg-[conic-gradient(from_180deg_at_50%_0%,_rgba(0,255,255,0.08)_0deg,_transparent_20deg,_transparent_340deg,_rgba(0,255,255,0.08)_360deg)] pointer-events-none z-0"></div>
 
             {/* Grid Background Overlay */}
             <div
-                className="absolute inset-0 opacity-30 bg-cover bg-center mix-blend-screen pointer-events-none"
+                className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-screen pointer-events-none"
                 style={{ backgroundImage: `url(${projectorRoom})` }}
             ></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.04)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
 
             <div className="relative z-10 container mx-auto px-4 text-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1 }}
-                    className="mb-16"
+                    className="mb-12"
                 >
-                    <h2 className="text-4xl md:text-6xl font-marquee text-rasrang-cyan neon-glow-cyan mb-2">PROJECTION ROOM</h2>
-                    <p className="font-typewriter text-white/60 tracking-widest text-sm uppercase">Vintage Sci-Fi Features</p>
+                    <h2 className="text-3xl md:text-5xl font-marquee text-rasrang-cyan neon-glow-cyan mb-2 leading-tight">PROJECTION ROOM</h2>
+                    <p className="font-typewriter text-white/60 tracking-widest text-xs md:text-sm uppercase">Vintage Sci-Fi Features</p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 max-w-6xl mx-auto">
                     {techEvents.map((event, index) => (
                         <motion.div
                             key={event.id}
-                            initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
-                            whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
-                            className={`p-3 lg:p-4 rounded-sm shadow-[0_0_30px_rgba(0,255,255,0.1)] relative cursor-pointer border-4 md:col-span-1 group transition-transform text-left ${event.bg} ${event.border}`}
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                            whileHover={{ scale: 1.02, rotateY: 5 }}
+                            className={`p-4 rounded-lg shadow-[0_0_20px_rgba(0,255,255,0.15)] relative cursor-pointer border-2 md:col-span-1 group transition-all hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] ${event.bg} ${event.border}`}
+                            style={{ height: '380px' }}
                         >
                             {/* Inner Poster Border */}
-                            <div className={`relative h-full border-2 ${event.border} p-3 flex flex-col justify-between overflow-hidden ${event.isDark ? 'text-white' : 'text-black'}`}>
+                            <div className={`relative h-full border rounded-md p-3 flex flex-col justify-between overflow-hidden ${event.isDark ? 'text-white' : 'text-black'}`} style={{ height: '100%' }}>
                                 
                                 {/* Production Company Banner */}
-                                <div className="text-center mb-3 border-b-2 border-current pb-2">
-                                    <p className="text-[10px] font-cinema tracking-widest uppercase opacity-80 text-rasrang-cyan">A Rasrang Tech Production</p>
-                                    <div className="flex items-center justify-center gap-1 mt-1">
-                                    {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className="w-3 h-3 fill-current opacity-70" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    ))}
-                                    </div>
+                                <div className="text-center mb-2 border-b border-current/50 pb-1.5">
+                                    <p className="text-[9px] font-cinema tracking-[0.05em] uppercase opacity-80 text-rasrang-cyan">A Rasrang Tech Production</p>
                                 </div>
 
                                 {/* Poster Image */}
-                                <div className="relative aspect-[4/5] overflow-hidden border border-current shadow-inner mb-4">
+                                <div className="relative flex-1 overflow-hidden border border-current/30 rounded shadow-inner mb-3">
                                     <img
                                         src={event.img}
                                         alt={event.title}
-                                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 contrast-125 sepia-[.30] transition-all duration-700 scale-105 group-hover:scale-100"
+                                        className="w-full h-full object-cover filter grayscale-[0.3] brightness-110 contrast-120 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500 scale-105 group-hover:scale-100"
                                     />
-                                    {/* Film grain overlay */}
-                                    <div className="absolute inset-0 pointer-events-none opacity-30 bg-[url('https://www.transparenttextures.com/patterns/film-grain.png')] mix-blend-overlay"></div>
+                                    <div className="absolute inset-0 pointer-events-none opacity-25 bg-[url('https://www.transparenttextures.com/patterns/film-grain.png')] mix-blend-overlay"></div>
                                 </div>
 
-                                {/* Typography / Title Section */}
-                                <div className="flex-grow flex flex-col justify-center text-center mb-2">
-                                    <h3 className={`text-4xl lg:text-5xl font-marquee uppercase leading-none mb-1 opacity-90 transition-colors duration-300 ${event.color}`}>
+                                {/* Typography */}
+                                <div className="space-y-1 text-center mb-3">
+                                    <h3 className={`text-2xl md:text-2.5xl font-marquee uppercase leading-tight opacity-95 ${event.color}`}>
                                         {event.title}
                                     </h3>
-                                    <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-80 mt-1">{event.subtitle}</h4>
+                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-75">{event.subtitle}</h4>
                                 </div>
 
-                                {/* Credits / Footer */}
-                                <div className="mt-auto text-center border-t-2 border-current pt-2 pb-1 relative">
-                                    <p className="font-typewriter text-[9px] uppercase leading-tight opacity-70 text-balance">
-                                        PROGRAMMED BY THE BEST MINDS OF THE GENERATION<br/>
-                                        COMPILED BY THE CREATORS<br/>
-                                        EXECUTED BY RASRANG
+                                {/* Footer */}
+                                <div className="text-center border-t border-current/50 pt-2 pb-1.5 relative">
+                                    <p className="font-typewriter text-[8px] leading-tight opacity-70 mb-2">
+                                        PROGRAMMED BY THE BEST MINDS<br/>COMPILED BY CREATORS<br/>EXECUTED BY RASRANG
                                     </p>
                                     
-                                    <div className="flex justify-between items-end mt-4">
+                                    <div className="flex items-center justify-between">
                                         <div className="text-left">
-                                            <p className="text-[16px] font-bold font-cinema">{event.category}</p>
-                                            <p className="text-[10px] uppercase tracking-wider opacity-60">U/A Certified</p>
+                                            <p className="text-lg font-bold font-cinema leading-tight">{event.category}</p>
+                                            <p className="text-[8px] uppercase tracking-[0.15em] opacity-70">U/A Certified</p>
                                         </div>
                                         <button
-                                            onClick={(e) => { e.stopPropagation(); onAddToCart({ id: `tech-${event.id}`, name: event.title }); }}
-                                            className="px-4 py-2 bg-current text-black font-cinema text-[12px] hover:scale-110 transition-transform mix-blend-difference"
-                                            style={{ filter: "invert(1)" }}
+                                            onClick={(e) => { e.stopPropagation(); onBookTicket(event); }}
+                                            className={`px-4 py-2 bg-gradient-to-r ${event.color === 'text-green-500' ? 'from-green-500 to-emerald-500' : event.color === 'text-orange-500' ? 'from-orange-500 to-yellow-500' : event.color === 'text-blue-500' ? 'from-blue-500 to-indigo-500' : 'from-red-500 to-pink-500'} text-white font-bold text-xs uppercase tracking-wide hover:scale-105 shadow-lg rounded-md transition-all absolute bottom-4 right-4`}
+                                            style={{ zIndex: 10 }}
                                         >
                                             BOOK TICKET
                                         </button>
@@ -106,10 +140,10 @@ const TechProjection = ({ onAddToCart }) => {
                 </div>
             </div>
 
-            {/* Sci-fi Overlay Elements */}
-            <div className="absolute bottom-4 left-4 text-[10px] font-typewriter text-rasrang-cyan/30 flex flex-col gap-1 pointer-events-none">
-                <p>COORDS: 12.09N, 80.27E</p>
-                <p>VOLTAGE_STABLE: 230V</p>
+            {/* Status Display */}
+            <div className="absolute bottom-4 left-4 text-[9px] font-typewriter text-rasrang-cyan/40 flex flex-col gap-0.5 pointer-events-none">
+                <p>COORDS: 12.09°N 80.27°E</p>
+                <p>VOLTAGE: 230V ✓</p>
                 <p>UPTIME: 100%</p>
             </div>
         </section>
@@ -117,3 +151,4 @@ const TechProjection = ({ onAddToCart }) => {
 };
 
 export default TechProjection;
+

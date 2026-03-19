@@ -146,19 +146,8 @@ app.post('/api/bookings', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-        // Check for existing booking by email
-        const { getBookingByEmail } = await import('./models/Booking.js');
-        const { getTicketsByBookingId } = await import('./models/Ticket.js');
-        const existingBooking = await getBookingByEmail(email);
-        
-        if (existingBooking) {
-            const tickets = await getTicketsByBookingId(existingBooking.id);
-            return res.status(200).json({
-                message: 'Existing booking found',
-                booking: existingBooking,
-                tickets: tickets
-            });
-        }
+// Removed existing booking check - always create new for separate tickets
+
 
         const bookingId = randomId();
         const savedBooking = await createBooking({
@@ -168,9 +157,10 @@ app.post('/api/bookings', async (req, res) => {
             events
         });
 
-        // Generate tickets for each event
+        // Handle string or object events, ensure eventName string
         const savedTickets = [];
-        for (const eventName of events) {
+        for (const eventObj of events) {
+            const eventName = typeof eventObj === 'string' ? eventObj : (eventObj.title || eventObj.eventName || eventObj.name || 'Tech Event');
             const ticketId = `RSG-26-${Math.floor(1000 + Math.random() * 9000)}`;
             const randomSeat = `${String.fromCharCode(65 + Math.floor(Math.random() * 10))}-${Math.floor(1 + Math.random() * 50)}`;
 
