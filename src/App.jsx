@@ -62,7 +62,7 @@ function App() {
             }
         } catch (error) {
             console.error("Booking error:", error);
-            alert("Booking failed. Please check if the server is running.");
+            alert(error.message || "Booking failed. Please check if the server is running.");
         }
     };
 

@@ -64,7 +64,7 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
             }
         } catch (error) {
             console.error("Registration error:", error);
-            alert("Registration failed. Please try again.");
+            alert(error.message || "Registration failed. Please try again.");
         } finally {
             setIsLoading(false);
         }

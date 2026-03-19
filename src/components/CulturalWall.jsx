@@ -48,8 +48,8 @@ const CulturalWall = ({ onAddToCart, user }) => {
                             initial={{ opacity: 0, y: 50 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
-                            whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
-                            className={`p-3 lg:p-4 rounded-sm shadow-2xl relative cursor-pointer border-4 group transition-transform ${event.bg} ${event.border}`}
+                            whileHover={{ scale: 1.05, rotate: index % 2 === 0 ? 2 : -2, zIndex: 20 }}
+                            className={`p-3 lg:p-4 rounded-sm shadow-xl relative cursor-pointer border-4 group transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,229,255,0.4)] ${event.bg} ${event.border}`}
                         >
                             {/* Inner Poster Border */}
                             <div className={`relative h-full border-2 ${event.border} p-3 flex flex-col justify-between overflow-hidden ${event.isDark ? 'text-white' : 'text-black'}`}>
@@ -98,17 +98,16 @@ const CulturalWall = ({ onAddToCart, user }) => {
                                             <p className="text-[16px] font-bold font-cinema">{event.category}</p>
                                             <p className="text-[10px] uppercase tracking-wider opacity-60">U/A Certified</p>
                                         </div>
-                                        <div className="flex flex-col gap-2 items-end">
+                                        <div className="flex flex-col gap-2 items-end w-[130px]">
                                             <button
                                                 onClick={(e) => handleRegisterClick(e, event.title)}
-                                                className="w-full px-4 py-1.5 border border-current bg-transparent text-current font-cinema text-[10px] sm:text-[11px] hover:bg-current hover:text-white transition-all transform hover:scale-105"
+                                                className="relative w-full px-3 py-2 border-2 border-current bg-transparent text-current font-cinema text-xs sm:text-sm hover:!bg-current hover:!text-white transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl font-bold tracking-widest overflow-hidden group/btn"
                                             >
                                                 REGISTER NOW
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onAddToCart({ id: `cult-${event.id}`, name: event.title }); }}
-                                                className="w-full px-4 py-1.5 bg-current text-white font-cinema text-[10px] sm:text-[11px] hover:scale-105 transition-transform mix-blend-difference"
-                                                style={{ filter: "invert(1)" }}
+                                                className="w-full px-3 py-2 border-2 border-current bg-current !text-white font-cinema text-xs sm:text-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 font-bold tracking-widest hover:opacity-80"
                                             >
                                                 BOOK TICKET
                                             </button>

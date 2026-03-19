@@ -59,7 +59,7 @@ const BookTicketModal = ({ isOpen, onClose, event, user }) => {
                 setSubmitted(true);
             }
         } catch (error) {
-            alert("Booking failed. Please try again.");
+            alert(error.message || "Booking failed. Please try again.");
             console.error(error);
         } finally {
             setIsLoading(false);

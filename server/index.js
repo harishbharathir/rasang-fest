@@ -146,10 +146,12 @@ app.post('/api/bookings', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-        // Double Booking Check: Return existing ticket if already booked
+        // Restrictions and Checks
         if (email) {
             const { getTicketsByEmail } = await import('./models/Ticket.js');
             const existingTickets = await getTicketsByEmail(email);
+
+            // Double Booking Check: Return existing ticket if already booked
             for (const eventObj of events) {
                 const eventName = typeof eventObj === 'string' ? eventObj : (eventObj.title || eventObj.eventName || eventObj.name || 'Tech Event');
                 const alreadyRegisteredTicket = existingTickets.find(t => t.eventName === eventName);
@@ -159,6 +161,35 @@ app.post('/api/bookings', async (req, res) => {
                         booking: { id: alreadyRegisteredTicket.bookingId, userName, email, events: [eventName] },
                         tickets: [alreadyRegisteredTicket]
                     });
+                }
+            }
+
+            // Exclusivity Check: GRAND FINALE PRO SHOW vs Others
+            const GRAND_PASS_NAME = "GRAND FINALE PRO SHOW";
+            const isBookingGrandPass = events.some(e => {
+                const name = typeof e === 'string' ? e : (e.title || e.eventName || e.name);
+                return name === GRAND_PASS_NAME;
+            });
+            const hasExistingGrandPass = existingTickets.some(t => t.eventName === GRAND_PASS_NAME);
+            
+            const isBookingOtherEvents = events.some(e => {
+                const name = typeof e === 'string' ? e : (e.title || e.eventName || e.name);
+                return name !== GRAND_PASS_NAME;
+            });
+            const hasExistingOtherEvents = existingTickets.some(t => t.eventName !== GRAND_PASS_NAME);
+
+            if (isBookingGrandPass && (hasExistingOtherEvents || isBookingOtherEvents)) {
+                return res.status(403).json({ message: "You cannot book the Grand Finale Pro Show if you have already booked other individual events." });
+            }
+            if (isBookingOtherEvents && hasExistingGrandPass) {
+                return res.status(403).json({ message: "You have already booked the Grand Finale Pro Show. You do not need to book individual events." });
+            }
+
+            // Max 4 Events Check
+            if (!isBookingGrandPass && !hasExistingGrandPass) {
+                const totalEventsWillHave = existingTickets.length + events.length;
+                if (totalEventsWillHave > 4) {
+                    return res.status(403).json({ message: `You can only book a maximum of 4 individual events. You already have ${existingTickets.length} tickets.` });
                 }
             }
         }

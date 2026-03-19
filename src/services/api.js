@@ -11,7 +11,8 @@ export const createBooking = async (bookingData) => {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create booking');
+            const errData = await response.json().catch(() => null);
+            throw new Error(errData?.message || 'Failed to create booking');
         }
 
         return await response.json();
