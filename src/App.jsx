@@ -122,16 +122,17 @@ function App() {
 
                 <div className="relative">
                     <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} /></ActWrapper>
-                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} /></ActWrapper>
+                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={user} /></ActWrapper>
                     <ActWrapper id="act3"><TechProjection onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }} /></ActWrapper>
                     <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
                 </div>
 
-                <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} />
+                <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} user={user} />
                 <BookTicketModal 
                     isOpen={isBookTicketOpen} 
                     onClose={() => setIsBookTicketOpen(false)} 
                     event={currentEvent} 
+                    user={user}
                 />
                 <TicketModal
                     isOpen={isTicketOpen}

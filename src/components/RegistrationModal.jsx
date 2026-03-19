@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
 import EventTicket from './EventTicket';
-import { createBooking } from '../services/api';
+import { createBooking, getTicketsByUser } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const RegistrationModal = ({ isOpen, onClose, eventName }) => {
+const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ticket, setTicket] = useState(null);
@@ -14,7 +14,7 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
         name: '',
         regNo: '',
         institution: '',
-        email: '',
+        email: user?.email || '',
         mobile: ''
     });
 
@@ -22,6 +22,22 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setSubmitted(false);
+            setTicket(null);
+            setFormData(prev => ({ ...prev, email: user?.email || '' }));
+
+            // Pre-check if already booked
+            if (user?.email && eventName) {
+                getTicketsByUser(user.email).then(tickets => {
+                    const existing = (tickets || []).find(t => t.eventName === eventName);
+                    if (existing) {
+                        setTicket(existing);
+                        setSubmitted(true);
+                        // Also pre-fill form data with existing user data if available
+                        setFormData(prev => ({ ...prev, name: existing.userName?.split(' - ')[0] || prev.name }));
+                    }
+                }).catch(err => console.error("Error fetching existing tickets:", err));
+            }
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -220,8 +236,9 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
                                                 type="email"
                                                 name="email" 
                                                 value={formData.email} 
+                                                readOnly
                                                 onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all" 
+                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white/70 font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all cursor-not-allowed" 
                                                 placeholder="student@college.edu" 
                                             />
                                         </div>

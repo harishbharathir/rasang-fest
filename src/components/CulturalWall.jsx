@@ -10,7 +10,7 @@ const events = [
     { id: 4, title: 'CHALA', subtitle: 'FRAME BY FRAME', category: 'Short Film', color: 'text-zinc-800', bg: 'bg-[#fafafa]', border: 'border-zinc-900', img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop' },
 ];
 
-const CulturalWall = ({ onAddToCart }) => {
+const CulturalWall = ({ onAddToCart, user }) => {
     const [isRegModalOpen, setIsRegModalOpen] = useState(false);
     const [selectedEventName, setSelectedEventName] = useState("");
 
@@ -134,6 +134,7 @@ const CulturalWall = ({ onAddToCart }) => {
                     isOpen={isRegModalOpen} 
                     onClose={() => setIsRegModalOpen(false)} 
                     eventName={selectedEventName} 
+                    user={user}
                 />
             </div>
         </section>

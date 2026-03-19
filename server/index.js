@@ -146,8 +146,22 @@ app.post('/api/bookings', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-// Removed existing booking check - always create new for separate tickets
-
+        // Double Booking Check: Return existing ticket if already booked
+        if (email) {
+            const { getTicketsByEmail } = await import('./models/Ticket.js');
+            const existingTickets = await getTicketsByEmail(email);
+            for (const eventObj of events) {
+                const eventName = typeof eventObj === 'string' ? eventObj : (eventObj.title || eventObj.eventName || eventObj.name || 'Tech Event');
+                const alreadyRegisteredTicket = existingTickets.find(t => t.eventName === eventName);
+                if (alreadyRegisteredTicket) {
+                    return res.status(200).json({
+                        message: 'Already registered',
+                        booking: { id: alreadyRegisteredTicket.bookingId, userName, email, events: [eventName] },
+                        tickets: [alreadyRegisteredTicket]
+                    });
+                }
+            }
+        }
 
         const bookingId = randomId();
         const savedBooking = await createBooking({

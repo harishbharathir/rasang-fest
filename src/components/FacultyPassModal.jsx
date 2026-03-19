@@ -4,6 +4,7 @@ import { X, Download } from 'lucide-react';
 import EventTicket from './EventTicket';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { getFacultyPassByUser } from '../services/api';
 
 const DEPARTMENTS = [
     'Computer Science & Engineering',
@@ -41,7 +42,7 @@ const Field = ({ label, children }) => (
     </div>
 );
 
-export default function FacultyPassModal({ isOpen, onClose }) {
+export default function FacultyPassModal({ isOpen, onClose, user }) {
     const [passData, setPassData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -51,6 +52,26 @@ export default function FacultyPassModal({ isOpen, onClose }) {
     });
 
     const set = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+    React.useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            setPassData(null);
+            setError('');
+            setForm(prev => ({ ...prev, email: user?.email || '', name: '', institution: '', department: '', designation: '', employeeId: '', mobile: '', eventsAttending: '' }));
+
+            if (user?.email) {
+                getFacultyPassByUser(user.email).then(pass => {
+                    if (pass) {
+                        setPassData(pass);
+                        setForm(prev => ({ ...prev, institution: pass.institution || prev.institution, department: pass.department || prev.department }));
+                    }
+                }).catch(console.error);
+            }
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+    }, [isOpen, user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -211,7 +232,7 @@ export default function FacultyPassModal({ isOpen, onClose }) {
                                         <input required type="text" name="employeeId" value={form.employeeId} onChange={set} className={inputClass} placeholder="EMP-XXXX" />
                                     </Field>
                                     <Field label="Official Email">
-                                        <input required type="email" name="email" value={form.email} onChange={set} className={inputClass} placeholder="faculty@institution.edu" />
+                                        <input required type="email" name="email" value={form.email} readOnly onChange={set} className={inputClass + " cursor-not-allowed text-white/70"} placeholder="faculty@institution.edu" />
                                     </Field>
                                     <Field label="Mobile Number">
                                         <input required type="tel" name="mobile" value={form.mobile} onChange={set} className={inputClass} placeholder="+91 98765 43210" pattern="[0-9+\s\-]{10,15}" />

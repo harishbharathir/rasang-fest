@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
 import EventTicket from './EventTicket';
-import { createBooking } from '../services/api';
+import { createBooking, getTicketsByUser } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const BookTicketModal = ({ isOpen, onClose, event }) => {
+const BookTicketModal = ({ isOpen, onClose, event, user }) => {
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ticket, setTicket] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         rollNo: '',
-        email: '',
+        email: user?.email || '',
         mobile: ''
     });
 
@@ -21,6 +21,21 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setSubmitted(false);
+            setTicket(null);
+            setFormData(prev => ({ ...prev, email: user?.email || '' }));
+
+            // Pre-check if already booked
+            if (user?.email && event?.title) {
+                getTicketsByUser(user.email).then(tickets => {
+                    const existing = (tickets || []).find(t => t.eventName === event.title);
+                    if (existing) {
+                        setTicket(existing);
+                        setSubmitted(true);
+                        setFormData(prev => ({ ...prev, name: existing.userName || prev.name }));
+                    }
+                }).catch(console.error);
+            }
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -197,8 +212,9 @@ const BookTicketModal = ({ isOpen, onClose, event }) => {
                                                 type="email"
                                                 name="email" 
                                                 value={formData.email} 
+                                                readOnly
                                                 onChange={handleChange}
-                                                className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md" 
+                                                className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white/70 font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md cursor-not-allowed" 
                                                 placeholder="your@email.com" 
                                             />
                                         </div>
