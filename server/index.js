@@ -1,12 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import QRCode from 'qrcode';
 import { createBooking } from './models/Booking.js';
 import { createTicket, getTicketsByBookingId } from './models/Ticket.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,6 +27,9 @@ async function initDatabase() {
         user: process.env.MYSQL_USER || 'root',
         password: process.env.MYSQL_PASSWORD || 'root',
     });
+
+
+
 
     const dbName = process.env.MYSQL_DATABASE || 'rasang';
     await tempConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);

@@ -84,15 +84,25 @@ const EventTicket = ({
 
                     {/* --- QR CODE --- */}
                     {qrCode && (
-                        <div className="absolute top-[42%] right-[5.5%] w-[13.5%] aspect-square p-[1px] bg-white/10 backdrop-blur-[1px] shadow-sm">
-                            <img 
-                                src={qrCode} 
-                                alt="Ticket QR" 
+                        <div className="absolute bottom-[13.7%] right-[7.0%] w-[11.6%] aspect-square p-[1px] bg-white/10 backdrop-blur-[1px] shadow-sm">
+                            <img
+                                src={qrCode}
+                                alt="Ticket QR"
                                 className="w-full h-full object-contain mix-blend-multiply"
                                 style={{ imageRendering: 'pixelated' }}
                             />
                         </div>
                     )}
+
+
+
+
+
+
+
+
+
+
                 </div>
 
                 {/* Paper Texture Overlay for extra realism */}
