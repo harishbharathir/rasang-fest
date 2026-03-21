@@ -94,7 +94,7 @@ app.post('/api/faculty-pass', async (req, res) => {
         }
 
         const { default: pool } = await import('./db.js');
-        
+
         // Check for existing faculty pass by email
         const [existing] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ?', [email]);
         if (existing.length > 0) {

@@ -94,15 +94,6 @@ const EventTicket = ({
                         </div>
                     )}
 
-
-
-
-
-
-
-
-
-
                 </div>
 
                 {/* Paper Texture Overlay for extra realism */}
