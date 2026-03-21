@@ -174,19 +174,6 @@ app.post('/api/bookings', async (req, res) => {
                 return name === GRAND_PASS_NAME;
             });
             const hasExistingGrandPass = existingTickets.some(t => t.eventName === GRAND_PASS_NAME);
-            
-            const isBookingOtherEvents = events.some(e => {
-                const name = typeof e === 'string' ? e : (e.title || e.eventName || e.name);
-                return name !== GRAND_PASS_NAME;
-            });
-            const hasExistingOtherEvents = existingTickets.some(t => t.eventName !== GRAND_PASS_NAME);
-
-            if (isBookingGrandPass && (hasExistingOtherEvents || isBookingOtherEvents)) {
-                return res.status(403).json({ message: "You cannot book the Grand Finale Pro Show if you have already booked other individual events." });
-            }
-            if (isBookingOtherEvents && hasExistingGrandPass) {
-                return res.status(403).json({ message: "You have already booked the Grand Finale Pro Show. You do not need to book individual events." });
-            }
 
             // Max 4 Events Check
             if (!isBookingGrandPass && !hasExistingGrandPass) {
@@ -195,6 +182,7 @@ app.post('/api/bookings', async (req, res) => {
                     return res.status(403).json({ message: `You can only book a maximum of 4 individual events. You already have ${existingTickets.length} tickets.` });
                 }
             }
+
         }
 
         const bookingId = randomId();
