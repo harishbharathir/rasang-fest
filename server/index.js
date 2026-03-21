@@ -57,8 +57,8 @@ async function initDatabase() {
             userName VARCHAR(255) NOT NULL,
             ticketId VARCHAR(50) NOT NULL UNIQUE,
             seat VARCHAR(20),
-            date VARCHAR(50) DEFAULT 'MARCH 15-16, 2026',
-            time VARCHAR(50) DEFAULT '10:00 AM ONWARDS',
+            date VARCHAR(50) DEFAULT 'MARCH 15-16',
+            time VARCHAR(50) DEFAULT '10:00 AM',
             venue VARCHAR(255) DEFAULT 'MAIN CAMPUS GROUNDS',
             qrCode TEXT,
             FOREIGN KEY (bookingId) REFERENCES bookings(id)
@@ -216,8 +216,8 @@ app.post('/api/bookings', async (req, res) => {
                 userName,
                 ticketId,
                 seat: randomSeat,
-                date: 'MARCH 15-16, 2026',
-                time: '10:00 AM ONWARDS',
+                date: 'MARCH 15-16',
+                time: '10:00 AM',
                 venue: 'MAIN CAMPUS GROUNDS',
                 qrCode
             });

@@ -82,9 +82,9 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                 onclone: (clonedDoc) => {
                     const ticket = clonedDoc.getElementById('registration-ticket-inner');
                     if (ticket) {
-                        // EventTicket has aspectRatio '1000 / 415'
-                        ticket.style.width = '1000px';
-                        ticket.style.height = '415px';
+                        // EventTicket has aspectRatio '1571 / 672'
+                        ticket.style.width = '1571px';
+                        ticket.style.height = '707px';
                         ticket.style.aspectRatio = 'auto';
                     }
                 }
@@ -93,14 +93,14 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
             const pdf = new jsPDF('l', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            
+
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
             const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-            
+
             const drawWidth = imgWidth * ratio * 0.9;
             const drawHeight = imgHeight * ratio * 0.9;
-            
+
             const xPos = (pdfWidth - drawWidth) / 2;
             const yPos = (pdfHeight - drawHeight) / 2;
 
@@ -156,21 +156,21 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                             {/* Scrollable body */}
                             <div className="flex-1 overflow-y-auto px-5 pb-5 pt-2 custom-scrollbar">
                                 {submitted ? (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="flex flex-col items-center gap-4"
                                     >
                                         {/* Compact ticket card */}
                                         <div id="registration-ticket-inner" className="w-full mx-auto">
-                                            <EventTicket 
+                                            <EventTicket
                                                 userName={formData.name}
                                                 eventName={eventName}
                                                 ticketId={ticket?.ticketId}
                                                 qrCode={ticket?.qrCode}
                                                 venue={formData.institution}
-                                                date="MARCH 15-16, 2026"
-                                                time="10:00 AM ONWARDS"
+                                                date="MARCH 15-16"
+                                                time="10:00 AM"
                                             />
                                         </div>
 
@@ -194,70 +194,70 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                                     <form onSubmit={handleSubmit} className="space-y-3">
                                         <div className="space-y-1">
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">NAME *</label>
-                                            <input 
-                                                required 
-                                                name="name" 
-                                                value={formData.name} 
+                                            <input
+                                                required
+                                                name="name"
+                                                value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all" 
-                                                placeholder="Full Name" 
+                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
+                                                placeholder="Full Name"
                                             />
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1">
                                                 <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">REG NO *</label>
-                                                <input 
-                                                    required 
-                                                    name="regNo" 
-                                                    value={formData.regNo} 
+                                                <input
+                                                    required
+                                                    name="regNo"
+                                                    value={formData.regNo}
                                                     onChange={handleChange}
-                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all" 
-                                                    placeholder="URK20XX000" 
+                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
+                                                    placeholder="URK20XX000"
                                                 />
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">COLLEGE *</label>
-                                                <input 
-                                                    required 
-                                                    name="institution" 
-                                                    value={formData.institution} 
+                                                <input
+                                                    required
+                                                    name="institution"
+                                                    value={formData.institution}
                                                     onChange={handleChange}
-                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all" 
-                                                    placeholder="College Name" 
+                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
+                                                    placeholder="College Name"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="space-y-1">
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">EMAIL *</label>
-                                            <input 
-                                                required 
+                                            <input
+                                                required
                                                 type="email"
-                                                name="email" 
-                                                value={formData.email} 
+                                                name="email"
+                                                value={formData.email}
                                                 readOnly
                                                 onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white/70 font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all cursor-not-allowed" 
-                                                placeholder="student@college.edu" 
+                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white/70 font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all cursor-not-allowed"
+                                                placeholder="student@college.edu"
                                             />
                                         </div>
 
                                         <div className="space-y-1">
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">PHONE *</label>
-                                            <input 
-                                                required 
+                                            <input
+                                                required
                                                 type="tel"
-                                                name="mobile" 
-                                                value={formData.mobile} 
+                                                name="mobile"
+                                                value={formData.mobile}
                                                 onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all" 
-                                                placeholder="+91 98XXX XXXXX" 
+                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
+                                                placeholder="+91 98XXX XXXXX"
                                             />
                                         </div>
 
-                                        <button 
-                                            type="submit" 
+                                        <button
+                                            type="submit"
                                             disabled={isLoading}
                                             className={`w-full h-14 bg-gradient-to-r from-rasrang-yellow via-amber-400 to-orange-400 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all font-mono uppercase tracking-wider text-sm font-bold rounded-xl text-black ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         >

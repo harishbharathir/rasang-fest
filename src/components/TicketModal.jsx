@@ -25,9 +25,9 @@ const TicketModal = ({ isOpen, onClose, tickets }) => {
                         onclone: (clonedDoc) => {
                             const ticket = clonedDoc.getElementById(`ticket-${i}`);
                             if (ticket) {
-                                // EventTicket has aspectRatio '1000 / 415'
-                                ticket.style.width = '1000px';
-                                ticket.style.height = '415px';
+                                // EventTicket has aspectRatio '1571 / 672'
+                                ticket.style.width = '1571px';
+                                ticket.style.height = '707px';
                                 // Ensure any nested absolute elements resolve correctly
                                 ticket.style.position = 'relative';
                             }

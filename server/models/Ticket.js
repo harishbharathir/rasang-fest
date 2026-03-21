@@ -11,8 +11,8 @@ export async function createTicket({ id, bookingId, eventName, userName, ticketI
             userName,
             ticketId,
             seat || null,
-            date || 'MARCH 15-16, 2026',
-            time || '10:00 AM ONWARDS',
+            date || 'MARCH 15-16',
+            time || '10:00 AM',
             venue || 'MAIN CAMPUS GROUNDS',
             qrCode || null
         ]

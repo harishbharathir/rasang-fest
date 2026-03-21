@@ -1,12 +1,12 @@
 import React from 'react';
-import ticketTemplate from '../assets/ticket-temp.jpeg';
+import ticketTemplate from '../assets/ticket-new.png';
 
 const EventTicket = ({
     userName = "FACULTY",
     eventName = "GRAND EVENT",
     ticketId = "RSG-2026-X89",
-    date = "MARCH 15-16, 2026",
-    time = "10:00 AM ONWARDS",
+    date = "MARCH 27-28",
+    time = "10:00 AM",
     venue = "MAIN CAMPUS GROUNDS",
     row = "A",
     seat = "24",
@@ -14,13 +14,13 @@ const EventTicket = ({
 }) => {
 
     return (
-        <div className="w-full max-w-[900px] mx-auto p-4 flex justify-center items-center">
+        <div className="w-full max-w-[900px] mx-auto px-4 py-8 flex justify-center items-center">
             <div
                 className="relative shadow-2xl overflow-hidden select-none font-typewriter uppercase text-black rounded-sm"
                 style={{
                     width: '100%',
                     maxWidth: '900px',
-                    aspectRatio: '1000 / 415'
+                    aspectRatio: '1571 / 707' // Added height to reveal 10px top & bottom (approx 35 units in ratio)
                 }}
             >
                 {/* Real Image Background */}
@@ -31,73 +31,85 @@ const EventTicket = ({
                     className="absolute inset-0 w-full h-full object-cover z-0"
                 />
 
-                {/* --- DATA OVERLAY (Z-Index 10) --- */}
-                <div className="relative z-10 w-full h-full pointer-events-none">
+                {/* --- DATA OVERLAY (Centered wrapper to maintain text alignment) --- */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div 
+                        className="relative z-10 w-full" 
+                        style={{ aspectRatio: '1571 / 672' }}
+                    >
 
-                    {/* ADMIT ONE: */}
-                    <div className="absolute top-[46.8%] left-[21.5%] w-[35%] text-[1.4vw] md:text-[16px] font-bold text-black border-b border-black/5 truncate">
-                        {userName || "TICKET HOLDER"}
-                    </div>
 
-                    {/* TICKET ID: */}
-                    <div className="absolute top-[52.8%] left-[21.5%] w-[35%] text-[1.3vw] md:text-[14px] text-black">
-                        {ticketId || "RSG-XXXX-XXX"}
-                    </div>
-
-                    {/* DATE: */}
-                    <div className="absolute top-[58.8%] left-[17.5%] w-[35%] text-[1.3vw] md:text-[14px] text-black">
-                        {date}
-                    </div>
-
-                    {/* TIME: */}
-                    <div className="absolute top-[64.8%] left-[17.5%] w-[35%] text-[1.3vw] md:text-[14px] text-black">
-                        {time}
-                    </div>
-
-                    {/* VENUE: */}
-                    <div className="absolute top-[70.8%] left-[19%] w-[35%] text-[1.2vw] md:text-[14px] leading-tight text-black">
-                        {venue}
-                    </div>
-
-                    {/* EVENT NAME (Replacement for Price) */}
-                    <div className="absolute top-[76.8%] left-[17.5%] w-[45%] text-[1.6vw] md:text-[20px] font-marquee text-[#FF007F] drop-shadow-sm truncate tracking-widest">
+                    {/* MAIN TICKET */}
+                    {/* COMPETITION NAME: */}
+                    <div className="absolute top-[32.2%] left-[32%] w-[33%] text-[1.1vw] md:text-[11px] text-black border-black/5 truncate text-left">
                         {eventName || "GENERAL ADMISSION"}
                     </div>
 
-                    {/* ROW: | SEAT: */}
-                    <div className="absolute top-[82.8%] left-[16.5%] text-[1.3vw] md:text-[14px] text-black">
-                        {row || "A"}
-                    </div>
-                    <div className="absolute top-[82.8%] left-[34.5%] text-[1.3vw] md:text-[14px] text-black">
-                        {seat || "X"}
+                    {/* DATE & TIME: */}
+                    <div className="absolute top-[42.2%] left-[32%] w-[33%] text-[1.1vw] md:text-[11px] text-black text-left truncate">
+                        {date} {time}
                     </div>
 
-                    {/* --- ADMIN STUB --- */}
-                    <div className="absolute top-[28%] left-[64.5%] w-[14.5%] text-[1.2vw] md:text-[14px] text-center border-b border-black/20 text-black font-bold">
+                    {/* VENUE: */}
+                    <div className="absolute top-[52.2%] left-[20%] w-[55%] text-[1.1vw] md:text-[11px] text-black leading-tight text-left truncate">
+                        {venue}
+                    </div>
+
+                    {/* REGISTRATION ID: */}
+                    <div className="absolute top-[62.2%] left-[32%] w-[33%] text-[1.1vw] md:text-[11px] text-black text-left truncate">
+                        {ticketId || "RSG-XXXX-XXX"}
+                    </div>
+
+                    {/* USER NAME: */}
+                    <div className="absolute top-[72.2%] left-[32%] w-[33%] text-[1.1vw] md:text-[11px] text-black text-left truncate">
+                        {userName || "TICKET HOLDER"}
+                    </div>
+
+                    {/* CATEGORY: */}
+                    <div className="absolute top-[82.2%] left-[32%] w-[33%] text-[1.1vw] md:text-[11px] text-black text-left truncate">
+                        {row}-{seat} / GENERAL
+                    </div>
+
+                    {/* --- ADMIN STUB (RIGHT SIDE) --- */}
+                    {/* REG ID: */}
+                    <div className="absolute top-[13.5%] left-[73.5%] w-[18%] text-[0.9vw] md:text-[9.5px] text-left text-black truncate">
                         {ticketId?.split('-').pop() || "ID"}
                     </div>
 
-                    {/* --- USER KEEPSAKE --- */}
-                    <div className="absolute top-[65.5%] left-[64.5%] w-[14.5%] text-[1.2vw] md:text-[14px] text-center border-b border-black/20 text-black font-bold">
-                        {ticketId?.split('-').pop() || "ID"}
+                    {/* USER NAME: */}
+                    <div className="absolute top-[20.2%] left-[78.5%] w-[16%] text-[0.9vw] md:text-[9.5px] text-left text-black truncate">
+                        {userName?.split(' ')[0] || "TICKET HOLDER"}
                     </div>
 
-                    {/* --- QR CODE --- */}
+                    {/* COMPETITION: */}
+                    <div className="absolute top-[26.9%] left-[80.5%] w-[15%] text-[0.9vw] md:text-[9.5px] text-left text-black truncate">
+                        {eventName?.slice(0, 15) || "EVENT"}
+                    </div>
+
+                    {/* DATE: */}
+                    <div className="absolute top-[35.5%] left-[73.5%] w-[16%] text-[0.9vw] md:text-[9.5px] text-left text-black truncate">
+                        {date?.slice(0, 15)}
+                    </div>
+
+                    {/* TIME: */}
+                    <div className="absolute top-[43.5%] left-[73.5%] w-[16%] text-[0.9vw] md:text-[9.5px] text-left text-black truncate">
+                        {time?.slice(0, 12)}
+                    </div>
+
+                    {/* --- HUGE QR CODE --- (Overlays the giant QR box area) */}
                     {qrCode && (
-                        <div className="absolute bottom-[13.7%] right-[7.0%] w-[11.6%] aspect-square p-[1px] bg-white/10 backdrop-blur-[1px] shadow-sm">
+                        <div className="absolute top-[54.5%] left-[70.1%] w-[18.2%] aspect-square p-[1px] shadow-sm bg-white mix-blend-multiply flex items-center justify-center">
                             <img
                                 src={qrCode}
                                 alt="Ticket QR"
-                                className="w-full h-full object-contain mix-blend-multiply"
+                                className="w-[88%] h-[88%] object-contain"
                                 style={{ imageRendering: 'pixelated' }}
                             />
                         </div>
                     )}
 
+                    </div>
                 </div>
-
-                {/* Paper Texture Overlay for extra realism */}
-                <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-20"></div>
             </div>
         </div>
     );

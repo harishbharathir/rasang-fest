@@ -107,7 +107,7 @@ export default function FacultyPassModal({ isOpen, onClose, user }) {
                     if (pass) {
                         // EventTicket has aspectRatio '1000 / 415'
                         pass.style.width = '1000px';
-                        pass.style.height = '415px';
+                        pass.style.height = '450px';
                         pass.style.aspectRatio = 'auto';
                     }
                 }
@@ -116,14 +116,14 @@ export default function FacultyPassModal({ isOpen, onClose, user }) {
             const pdf = new jsPDF('l', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            
+
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
             const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-            
+
             const drawWidth = imgWidth * ratio * 0.9;
             const drawHeight = imgHeight * ratio * 0.9;
-            
+
             const xPos = (pdfWidth - drawWidth) / 2;
             const yPos = (pdfHeight - drawHeight) / 2;
 
@@ -179,14 +179,14 @@ export default function FacultyPassModal({ isOpen, onClose, user }) {
                                 >
                                     {/* Event ticket component */}
                                     <div id="faculty-pass-card-inner" className="w-full">
-                                        <EventTicket 
+                                        <EventTicket
                                             userName={passData.name}
                                             eventName="FACULTY PASS"
                                             ticketId={passData.passCode}
                                             qrCode={passData.qrCode}
-                                            venue={`${form.institution} | ${form.department}`}
-                                            date="MARCH 15-16, 2026"
-                                            time="ALL FEST SESSIONS"
+                                            venue={`${form.institution}`}
+                                            date="MARCH 15-16"
+                                            time="10:00 AM"
                                         />
                                     </div>
 
