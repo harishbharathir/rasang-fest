@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import brickWall from '../assets/brick-wall.jpg';
+import dhvaniPoster from '../assets/dhvani_event_poster.png';
+import natyaPoster from '../assets/natya_event_poster.png';
 import RegistrationModal from './RegistrationModal';
 
 const events = [
-    { id: 1, title: 'NATYA', subtitle: 'THE DRAMA UNFOLDS', category: 'Drama', color: 'text-red-600', bg: 'bg-[#f4ebe1]', border: 'border-red-800', img: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?q=80&w=2069&auto=format&fit=crop' },
-    { id: 2, title: 'DHVANI', subtitle: 'ECHOES OF ETERNITY', category: 'Music', color: 'text-amber-500', bg: 'bg-[#1a1a1a]', border: 'border-amber-500', img: 'https://images.unsplash.com/photo-1514525253361-bee8a48790c3?q=80&w=1974&auto=format&fit=crop', isDark: true },
+    { id: 1, title: 'NATYA', subtitle: 'THE DRAMA UNFOLDS', category: 'Drama', color: 'text-red-600', bg: 'bg-[#f4ebe1]', border: 'border-red-800', img: natyaPoster },
+    { id: 2, title: 'DHVANI', subtitle: 'ECHOES OF ETERNITY', category: 'Music', color: 'text-amber-500', bg: 'bg-[#1a1a1a]', border: 'border-amber-500', img: dhvaniPoster, isDark: true },
     { id: 3, title: 'NRITYA', subtitle: 'RHYTHM DEFIED', category: 'Dance', color: 'text-cyan-800', bg: 'bg-[#e2e8f0]', border: 'border-cyan-900', img: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=2069&auto=format&fit=crop' },
     { id: 4, title: 'CHALA', subtitle: 'FRAME BY FRAME', category: 'Short Film', color: 'text-zinc-800', bg: 'bg-[#fafafa]', border: 'border-zinc-900', img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop' },
 ];
 
-const CulturalWall = ({ onAddToCart, user }) => {
+const CulturalWall = ({ onAddToCart, user, userData }) => {
     const [isRegModalOpen, setIsRegModalOpen] = useState(false);
     const [selectedEventName, setSelectedEventName] = useState("");
 
@@ -152,6 +154,7 @@ const CulturalWall = ({ onAddToCart, user }) => {
                     onClose={() => setIsRegModalOpen(false)} 
                     eventName={selectedEventName} 
                     user={user}
+                    userData={userData}
                 />
             </div>
         </section>

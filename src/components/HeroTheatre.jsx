@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import theatreEntrance from '../assets/theatre-entrance.jpg';
 
-const HeroTheatre = ({ onBook }) => {
+const HeroTheatre = ({ onBook, userType }) => {
     return (
         <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-rasrang-black">
             {/* Background Texture Placeholder */}
@@ -63,12 +63,14 @@ const HeroTheatre = ({ onBook }) => {
                     <p className="text-white font-typewriter text-xl">GRANDE FINALE</p>
                 </div>
 
-                <button
-                    onClick={onBook}
-                    className="w-full py-4 bg-rasrang-pink text-white font-marquee text-2xl hover:bg-rasrang-yellow hover:text-rasrang-black transition-colors duration-300 shadow-[0_0_20px_#FF007F] hover:shadow-[0_0_20px_#FFD700]"
-                >
-                    GET FACULTY PASS
-                </button>
+                {userType !== 'student' && (
+                    <button
+                        onClick={onBook}
+                        className="w-full py-4 bg-rasrang-pink text-white font-marquee text-2xl hover:bg-rasrang-yellow hover:text-rasrang-black transition-colors duration-300 shadow-[0_0_20px_#FF007F] hover:shadow-[0_0_20px_#FFD700]"
+                    >
+                        GET FACULTY PASS
+                    </button>
+                )}
             </motion.div>
 
 

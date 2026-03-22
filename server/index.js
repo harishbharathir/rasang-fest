@@ -66,6 +66,18 @@ async function initDatabase() {
     `);
 
     await pool.execute(`
+        CREATE TABLE IF NOT EXISTS students (
+            id VARCHAR(36) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            registerNo VARCHAR(100) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            mobile VARCHAR(20) NOT NULL,
+            institution VARCHAR(255) NOT NULL,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
+    await pool.execute(`
         CREATE TABLE IF NOT EXISTS faculty_passes (
             id VARCHAR(36) PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -136,6 +148,60 @@ app.get('/api/faculty-pass/user/:email', async (req, res) => {
         res.status(200).json(rows[0]);
     } catch (error) {
         console.error('Error fetching faculty pass:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Check user registration status
+app.get('/api/user/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { default: pool } = await import('./db.js');
+
+        // Check students
+        const [students] = await pool.execute('SELECT * FROM students WHERE email = ?', [email]);
+        if (students.length > 0) {
+            return res.status(200).json({ registered: true, type: 'student', data: students[0] });
+        }
+
+        // Check faculty
+        const [faculty] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ?', [email]);
+        if (faculty.length > 0) {
+            return res.status(200).json({ registered: true, type: 'faculty', data: faculty[0] });
+        }
+
+        return res.status(200).json({ registered: false });
+    } catch (error) {
+        console.error('Error fetching user status:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Student registration
+app.post('/api/students', async (req, res) => {
+    try {
+        const { name, registerNo, email, mobile, institution } = req.body;
+        if (!name || !registerNo || !email || !mobile || !institution) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        const { default: pool } = await import('./db.js');
+
+        const [existing] = await pool.execute('SELECT * FROM students WHERE email = ?', [email]);
+        if (existing.length > 0) {
+            return res.status(200).json(existing[0]);
+        }
+
+        const id = randomId();
+        await pool.execute(
+            `INSERT INTO students (id, name, registerNo, email, mobile, institution)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [id, name, registerNo, email, mobile, institution]
+        );
+
+        res.status(201).json({ id, name, registerNo, email, mobile, institution });
+    } catch (error) {
+        console.error('Student registration error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

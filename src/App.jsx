@@ -12,7 +12,8 @@ import TechProjection from './components/TechProjection';
 import ProShowStage from './components/ProShowStage';
 import GlobalElements from './components/GlobalElements';
 import FacultyPassModal from './components/FacultyPassModal';
-import { createBooking, getTicketsByUser, getFacultyPassByUser } from './services/api';
+import RegistrationScreen from './components/RegistrationScreen';
+import { createBooking, getTicketsByUser, getFacultyPassByUser, checkUserRegistration } from './services/api';
 
 function App() {
     const [user, setUser] = useState(undefined);
@@ -24,8 +25,29 @@ function App() {
     const [isBookTicketOpen, setIsBookTicketOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
 
+    const [isRegistered, setIsRegistered] = useState(false);
+    const [registrationLoading, setRegistrationLoading] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [userType, setUserType] = useState(null);
+
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (u) => setUser(u ?? null));
+        const unsub = onAuthStateChanged(auth, async (u) => {
+            setUser(u ?? null);
+            if (u?.email) {
+                setRegistrationLoading(true);
+                const reg = await checkUserRegistration(u.email);
+                setIsRegistered(reg.registered);
+                if (reg.registered && reg.data) {
+                    setUserType(reg.type);
+                    setUserData(reg.data);
+                }
+                setRegistrationLoading(false);
+            } else {
+                setIsRegistered(false);
+                setUserData(null);
+                setUserType(null);
+            }
+        });
         return unsub;
     }, []);
 
@@ -103,6 +125,18 @@ function App() {
 
     if (user === undefined) return null;
     if (!user) return <GoogleSignIn onSignIn={setUser} />;
+    
+    if (registrationLoading) {
+        return <div className="min-h-screen bg-rasrang-black flex items-center justify-center font-typewriter text-white">Authenticating Profile...</div>;
+    }
+
+    if (!isRegistered) {
+        return <RegistrationScreen user={user} onRegistered={(data) => {
+            setIsRegistered(true);
+            setUserType(data.type);
+            setUserData(data.data);
+        }} />;
+    }
 
     return (
         <main className="relative bg-rasrang-black selection:bg-rasrang-pink selection:text-white">
@@ -117,12 +151,13 @@ function App() {
                     onCheckout={handleCheckout}
                     onViewTickets={handleViewTickets}
                     user={user}
+                    userData={userData}
                     onLogout={() => { signOutUser(); setUser(null); }}
                 />
 
                 <div className="relative">
-                    <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} /></ActWrapper>
-                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={user} /></ActWrapper>
+                    <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} userType={userType} /></ActWrapper>
+                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={user} userData={userData} /></ActWrapper>
                     <ActWrapper id="act3"><TechProjection onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }} /></ActWrapper>
                     <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
                 </div>
@@ -133,6 +168,7 @@ function App() {
                     onClose={() => setIsBookTicketOpen(false)} 
                     event={currentEvent} 
                     user={user}
+                    userData={userData}
                 />
                 <TicketModal
                     isOpen={isTicketOpen}

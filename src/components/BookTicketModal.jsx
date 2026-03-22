@@ -6,15 +6,15 @@ import { createBooking, getTicketsByUser } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const BookTicketModal = ({ isOpen, onClose, event, user }) => {
+const BookTicketModal = ({ isOpen, onClose, event, user, userData }) => {
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ticket, setTicket] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        rollNo: '',
+        name: userData?.name || user?.displayName || '',
+        rollNo: userData?.registerNo || userData?.employeeId || '',
         email: user?.email || '',
-        mobile: ''
+        mobile: userData?.mobile || ''
     });
 
     // Prevent body scroll
@@ -23,7 +23,13 @@ const BookTicketModal = ({ isOpen, onClose, event, user }) => {
             document.body.style.overflow = 'hidden';
             setSubmitted(false);
             setTicket(null);
-            setFormData(prev => ({ ...prev, email: user?.email || '' }));
+            setFormData(prev => ({ 
+                ...prev, 
+                email: user?.email || '', 
+                name: userData?.name || user?.displayName || prev.name,
+                rollNo: userData?.registerNo || userData?.employeeId || prev.rollNo,
+                mobile: userData?.mobile || prev.mobile
+            }));
 
             // Pre-check if already booked
             if (user?.email && event?.title) {
@@ -186,22 +192,20 @@ const BookTicketModal = ({ isOpen, onClose, event, user }) => {
                                         <label className="block text-sm font-bold text-gray-200 mb-3 backdrop-blur-sm">Full Name *</label>
                                         <input
                                             required
+                                            readOnly
                                             name="name"
                                             value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md text-lg"
-                                            placeholder="Enter your full name"
+                                            className="w-full h-14 px-5 bg-white/5 border-2 border-white/20 rounded-2xl text-white/70 font-mono focus:outline-none transition-all backdrop-blur-md text-lg cursor-not-allowed"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-200 mb-3 backdrop-blur-sm">Roll No. *</label>
+                                        <label className="block text-sm font-bold text-gray-200 mb-3 backdrop-blur-sm">Roll No. / ID *</label>
                                         <input
                                             required
+                                            readOnly
                                             name="rollNo"
                                             value={formData.rollNo}
-                                            onChange={handleChange}
-                                            className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md text-lg uppercase"
-                                            placeholder="URK20XX000"
+                                            className="w-full h-14 px-5 bg-white/5 border-2 border-white/20 rounded-2xl text-white/70 font-mono focus:outline-none transition-all backdrop-blur-md text-lg uppercase cursor-not-allowed"
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -209,25 +213,22 @@ const BookTicketModal = ({ isOpen, onClose, event, user }) => {
                                             <label className="block text-sm font-bold text-gray-200 mb-3 backdrop-blur-sm">Email *</label>
                                             <input
                                                 required
+                                                readOnly
                                                 type="email"
                                                 name="email"
                                                 value={formData.email}
-                                                readOnly
-                                                onChange={handleChange}
-                                                className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white/70 font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md cursor-not-allowed"
-                                                placeholder="your@email.com"
+                                                className="w-full h-14 px-5 bg-white/5 border-2 border-white/20 rounded-2xl text-white/70 font-mono focus:outline-none transition-all backdrop-blur-md cursor-not-allowed"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-bold text-gray-200 mb-3 backdrop-blur-sm">Mobile *</label>
                                             <input
                                                 required
+                                                readOnly
                                                 type="tel"
                                                 name="mobile"
                                                 value={formData.mobile}
-                                                onChange={handleChange}
-                                                className="w-full h-14 px-5 bg-white/10 border-2 border-white/30 rounded-2xl text-white font-mono placeholder-gray-400 focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all backdrop-blur-md"
-                                                placeholder="+91 9876543210"
+                                                className="w-full h-14 px-5 bg-white/5 border-2 border-white/20 rounded-2xl text-white/70 font-mono focus:outline-none transition-all backdrop-blur-md cursor-not-allowed"
                                             />
                                         </div>
                                     </div>

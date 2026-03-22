@@ -57,3 +57,35 @@ export const getFacultyPassByUser = async (email) => {
         return null;
     }
 };
+
+export const checkUserRegistration = async (email) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/user/${email}`);
+        if (!response.ok) return { registered: false };
+        return await response.json();
+    } catch (error) {
+        console.error('API Error (checkUserRegistration):', error);
+        return { registered: false };
+    }
+};
+
+export const registerStudent = async (studentData) => {
+    const response = await fetch(`${API_BASE_URL}/students`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(studentData),
+    });
+    if (!response.ok) throw new Error('Failed to register student');
+    return await response.json();
+};
+
+export const registerFaculty = async (facultyData) => {
+    const response = await fetch(`${API_BASE_URL}/faculty-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(facultyData),
+    });
+    if (!response.ok) throw new Error('Failed to register faculty');
+    return await response.json();
+};
+

@@ -5,10 +5,9 @@ import rasrangLogo from '../assets/rasrang-logo.png';
 import AudioDirector from './AudioDirector';
 import { useClapperSnap } from '../hooks/useClapperSnap';
 
-const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout, onViewTickets }) => {
+const GlobalElements = ({ cart, removeFromCart, onCheckout, user, userData, onLogout, onViewTickets }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [userName, setUserName] = useState('');
     const { clapProps } = useClapperSnap();
     const dropdownRef = useRef(null);
 
@@ -19,11 +18,8 @@ const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout, onVi
     }, []);
 
     const handleCheckout = () => {
-        if (!userName.trim()) {
-            alert("Please enter your name for the ticket!");
-            return;
-        }
-        onCheckout(userName.toUpperCase());
+        const finalName = userData?.name || user?.displayName || 'GUEST';
+        onCheckout(finalName.toUpperCase());
         setIsCartOpen(false);
     };
 
@@ -176,13 +172,9 @@ const GlobalElements = ({ cart, removeFromCart, onCheckout, user, onLogout, onVi
                                         <label className="block font-typewriter text-rasrang-cyan text-[10px] uppercase mb-2 tracking-widest opacity-60">
                                             Ticket Holder Name
                                         </label>
-                                        <input
-                                            type="text"
-                                            value={userName}
-                                            onChange={(e) => setUserName(e.target.value.toUpperCase())}
-                                            placeholder="ENTER NAME..."
-                                            className="w-full bg-black/40 border border-white/10 p-4 font-typewriter text-white placeholder:text-white/10 focus:border-rasrang-pink focus:outline-none transition-colors"
-                                        />
+                                        <div className="w-full bg-black/40 border border-white/10 p-4 font-typewriter text-white transition-colors cursor-not-allowed text-white/50">
+                                            {userData?.name ? userData.name.toUpperCase() : (user?.displayName?.toUpperCase() || 'GUEST')}
+                                        </div>
                                     </div>
                                     <button
                                         onClick={handleCheckout}

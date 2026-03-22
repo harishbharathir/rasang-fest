@@ -6,16 +6,16 @@ import { createBooking, getTicketsByUser } from '../services/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
+const RegistrationModal = ({ isOpen, onClose, eventName, user, userData }) => {
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ticket, setTicket] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        regNo: '',
-        institution: '',
+        name: userData?.name || user?.displayName || '',
+        regNo: userData?.registerNo || userData?.employeeId || '',
+        institution: userData?.institution || '',
         email: user?.email || '',
-        mobile: ''
+        mobile: userData?.mobile || ''
     });
 
     // Prevent body scroll when modal open
@@ -24,7 +24,14 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
             document.body.style.overflow = 'hidden';
             setSubmitted(false);
             setTicket(null);
-            setFormData(prev => ({ ...prev, email: user?.email || '' }));
+            setFormData(prev => ({ 
+                ...prev, 
+                email: user?.email || '',
+                name: userData?.name || user?.displayName || prev.name,
+                regNo: userData?.registerNo || userData?.employeeId || prev.regNo,
+                institution: userData?.institution || prev.institution,
+                mobile: userData?.mobile || prev.mobile
+            }));
 
             // Pre-check if already booked
             if (user?.email && eventName) {
@@ -196,11 +203,10 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">NAME *</label>
                                             <input
                                                 required
+                                                readOnly
                                                 name="name"
                                                 value={formData.name}
-                                                onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
-                                                placeholder="Full Name"
+                                                className="w-full h-12 bg-white/5 border border-white/20 rounded-lg px-4 text-white/70 font-mono text-sm focus:outline-none transition-all cursor-not-allowed"
                                             />
                                         </div>
 
@@ -209,22 +215,20 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                                                 <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">REG NO *</label>
                                                 <input
                                                     required
+                                                    readOnly
                                                     name="regNo"
                                                     value={formData.regNo}
-                                                    onChange={handleChange}
-                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
-                                                    placeholder="URK20XX000"
+                                                    className="w-full h-12 bg-white/5 border border-white/20 rounded-lg px-4 text-white/70 font-mono text-sm focus:outline-none transition-all cursor-not-allowed"
                                                 />
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">COLLEGE *</label>
                                                 <input
                                                     required
+                                                    readOnly
                                                     name="institution"
                                                     value={formData.institution}
-                                                    onChange={handleChange}
-                                                    className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
-                                                    placeholder="College Name"
+                                                    className="w-full h-12 bg-white/5 border border-white/20 rounded-lg px-4 text-white/70 font-mono text-sm focus:outline-none transition-all cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
@@ -233,13 +237,11 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">EMAIL *</label>
                                             <input
                                                 required
+                                                readOnly
                                                 type="email"
                                                 name="email"
                                                 value={formData.email}
-                                                readOnly
-                                                onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white/70 font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all cursor-not-allowed"
-                                                placeholder="student@college.edu"
+                                                className="w-full h-12 bg-white/5 border border-white/20 rounded-lg px-4 text-white/70 font-mono text-sm focus:outline-none transition-all cursor-not-allowed"
                                             />
                                         </div>
 
@@ -247,12 +249,11 @@ const RegistrationModal = ({ isOpen, onClose, eventName, user }) => {
                                             <label className="text-white/80 text-xs font-mono uppercase tracking-wider block">PHONE *</label>
                                             <input
                                                 required
+                                                readOnly
                                                 type="tel"
                                                 name="mobile"
                                                 value={formData.mobile}
-                                                onChange={handleChange}
-                                                className="w-full h-12 bg-white/10 border border-white/30 rounded-lg px-4 text-white font-mono text-sm placeholder-white/50 focus:border-rasrang-cyan focus:outline-none transition-all"
-                                                placeholder="+91 98XXX XXXXX"
+                                                className="w-full h-12 bg-white/5 border border-white/20 rounded-lg px-4 text-white/70 font-mono text-sm focus:outline-none transition-all cursor-not-allowed"
                                             />
                                         </div>
 
