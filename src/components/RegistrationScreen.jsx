@@ -38,26 +38,26 @@ const Field = ({ label, children }) => (
     </div>
 );
 
-export default function RegistrationScreen({ user, onRegistered }) {
+export default function RegistrationScreen({ onRegistered, onBack }) {
     const [type, setType] = useState(null); // 'student' or 'faculty'
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const [studentForm, setStudentForm] = useState({
-        name: user?.displayName || '',
+        name: '',
         registerNo: '',
-        email: user?.email || '',
+        email: '',
         mobile: '',
         institution: ''
     });
 
     const [facultyForm, setFacultyForm] = useState({
-        name: user?.displayName || '',
+        name: '',
         institution: '',
         department: '',
         designation: '',
         employeeId: '',
-        email: user?.email || '',
+        email: '',
         mobile: '',
         eventsAttending: ''
     });
@@ -96,13 +96,13 @@ export default function RegistrationScreen({ user, onRegistered }) {
 
     if (!type) {
         return (
-            <div className="min-h-screen bg-rasrang-black flex items-center justify-center p-4 selection:bg-rasrang-pink selection:text-white">
+            <div className="min-h-screen bg-rasrang-black flex flex-col items-center justify-center p-4 selection:bg-rasrang-pink selection:text-white">
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="max-w-md w-full glass-morphic border-2 border-white/10 p-8 flex flex-col items-center gap-6"
                 >
-                    <h2 className="text-3xl font-marquee text-rasrang-yellow mb-2 tracking-widest text-center">JOIN THE FEST</h2>
+                    <h2 className="text-3xl font-marquee text-rasrang-yellow mb-2 tracking-widest text-center uppercase">Join the Fest</h2>
                     <p className="font-typewriter text-white/60 text-center text-sm mb-4 uppercase">Select your registration type to proceed</p>
                     
                     <button 
@@ -117,6 +117,13 @@ export default function RegistrationScreen({ user, onRegistered }) {
                         className="w-full py-4 bg-rasrang-pink hover:bg-white text-white hover:text-black font-marquee text-xl tracking-widest transition-colors shadow-[0_0_20px_#FF007F] hover:shadow-[0_0_20px_#ffffff]"
                     >
                         FACULTY
+                    </button>
+
+                    <button 
+                        onClick={onBack}
+                        className="mt-4 text-white/40 hover:text-white font-typewriter text-xs uppercase tracking-widest underline underline-offset-8 transition-colors"
+                    >
+                        Already have an account? Sign In
                     </button>
                 </motion.div>
             </div>
@@ -140,7 +147,7 @@ export default function RegistrationScreen({ user, onRegistered }) {
                     <button onClick={() => setType(null)} className="text-white/40 hover:text-white font-typewriter text-xs underline underline-offset-4">BACK</button>
                 </div>
 
-                {error && <p className="text-rasrang-pink font-typewriter text-xs mb-4">{error}</p>}
+                {error && <p className="text-rasrang-pink font-typewriter text-xs mb-4 uppercase">* {error} *</p>}
 
                 {type === 'student' ? (
                     <form onSubmit={handleStudentSubmit} className="flex flex-col gap-4">
@@ -151,11 +158,12 @@ export default function RegistrationScreen({ user, onRegistered }) {
                             <input required type="text" name="registerNo" value={studentForm.registerNo} onChange={setSForm} className={inputClass} placeholder="URK20XXX" />
                         </Field>
                         <Field label="Official Email">
-                            <input required type="email" name="email" value={studentForm.email} readOnly className={inputClass + " cursor-not-allowed text-white/40"} />
+                            <input required type="email" name="email" value={studentForm.email} onChange={setSForm} className={inputClass} placeholder="email@institution.edu" />
                         </Field>
                         <Field label="Mobile Number">
                             <input required type="tel" name="mobile" value={studentForm.mobile} onChange={setSForm} className={inputClass} placeholder="+91 9876543210" pattern="[0-9+\s\-]{10,15}" />
                         </Field>
+                        <p className="text-[10px] text-white/40 font-typewriter uppercase tracking-widest mt-[-8px]">Note: Your Mobile Number will be your login password.</p>
                         <Field label="Institution Name">
                             <select required name="institution" value={studentForm.institution} onChange={setSForm} className={inputClass + " appearance-none"}>
                                 <option value="" disabled>Select Institution</option>
@@ -192,11 +200,12 @@ export default function RegistrationScreen({ user, onRegistered }) {
                             <input required type="text" name="employeeId" value={facultyForm.employeeId} onChange={setFForm} className={inputClass} placeholder="EMP-XXXX" />
                         </Field>
                         <Field label="Official Email">
-                            <input required type="email" name="email" value={facultyForm.email} readOnly className={inputClass + " cursor-not-allowed text-white/40"} />
+                            <input required type="email" name="email" value={facultyForm.email} onChange={setFForm} className={inputClass} placeholder="faculty@institution.edu" />
                         </Field>
                         <Field label="Mobile Number">
                             <input required type="tel" name="mobile" value={facultyForm.mobile} onChange={setFForm} className={inputClass} placeholder="+91 9876543210" pattern="[0-9+\s\-]{10,15}" />
                         </Field>
+                        <p className="text-[10px] text-white/40 font-typewriter uppercase tracking-widest mt-[-8px]">Note: Your Mobile Number will be your login password.</p>
                         <Field label="Events / Sessions to Attend">
                             <select required name="eventsAttending" value={facultyForm.eventsAttending} onChange={setFForm} className={inputClass + " appearance-none"}>
                                 <option value="" disabled>Select Events</option>

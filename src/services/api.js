@@ -89,3 +89,16 @@ export const registerFaculty = async (facultyData) => {
     return await response.json();
 };
 
+export const loginUser = async (credentials) => {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+    });
+    if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.message || 'Invalid credentials');
+    }
+    return await response.json();
+};
+

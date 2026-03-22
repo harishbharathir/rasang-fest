@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, signOutUser } from './firebase';
-import GoogleSignIn from './components/GoogleSignIn';
+import LoginScreen from './components/LoginScreen';
 import TicketModal from './components/TicketModal';
 import BookTicketModal from './components/BookTicketModal';
 import CensorCertificate from './components/CensorCertificate';
@@ -13,10 +11,11 @@ import ProShowStage from './components/ProShowStage';
 import GlobalElements from './components/GlobalElements';
 import FacultyPassModal from './components/FacultyPassModal';
 import RegistrationScreen from './components/RegistrationScreen';
-import { createBooking, getTicketsByUser, getFacultyPassByUser, checkUserRegistration } from './services/api';
+import { createBooking, getTicketsByUser, getFacultyPassByUser } from './services/api';
 
 function App() {
-    const [user, setUser] = useState(undefined);
+    const [appUser, setAppUser] = useState(undefined); // { type, data }
+    const [showRegistration, setShowRegistration] = useState(false);
     const [loading, setLoading] = useState(true);
     const [isTicketOpen, setIsTicketOpen] = useState(false);
     const [ticketData, setTicketData] = useState([]);
@@ -25,38 +24,34 @@ function App() {
     const [isBookTicketOpen, setIsBookTicketOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
 
-    const [isRegistered, setIsRegistered] = useState(false);
-    const [registrationLoading, setRegistrationLoading] = useState(false);
-    const [userData, setUserData] = useState(null);
-    const [userType, setUserType] = useState(null);
-
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, async (u) => {
-            setUser(u ?? null);
-            if (u?.email) {
-                setRegistrationLoading(true);
-                const reg = await checkUserRegistration(u.email);
-                setIsRegistered(reg.registered);
-                if (reg.registered && reg.data) {
-                    setUserType(reg.type);
-                    setUserData(reg.data);
-                }
-                setRegistrationLoading(false);
-            } else {
-                setIsRegistered(false);
-                setUserData(null);
-                setUserType(null);
+        // Load user from localStorage on init
+        const savedUser = localStorage.getItem('rasrang_user');
+        if (savedUser) {
+            try {
+                setAppUser(JSON.parse(savedUser));
+            } catch (e) {
+                setAppUser(null);
             }
-        });
-        return unsub;
-    }, []);
+        } else {
+            setAppUser(null);
+        }
 
-    useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
         }, 4500);
         return () => clearTimeout(timer);
     }, []);
+
+    const handleLogin = (user) => {
+        setAppUser(user);
+        localStorage.setItem('rasrang_user', JSON.stringify(user));
+    };
+
+    const handleLogout = () => {
+        setAppUser(null);
+        localStorage.removeItem('rasrang_user');
+    };
 
     const addToCart = (event) => {
         setCart((prev) => {
@@ -73,7 +68,7 @@ function App() {
         try {
             const bookingData = {
                 userName,
-                email: user?.email,
+                email: appUser?.data?.email,
                 events: cart.map(item => item.name)
             };
             const result = await createBooking(bookingData);
@@ -89,11 +84,11 @@ function App() {
     };
 
     const handleViewTickets = async () => {
-        if (!user?.email) return;
+        if (!appUser?.data?.email) return;
         try {
             const [tickets, facultyPass] = await Promise.all([
-                getTicketsByUser(user.email),
-                getFacultyPassByUser(user.email)
+                getTicketsByUser(appUser.data.email),
+                getFacultyPassByUser(appUser.data.email)
             ]);
 
             const allTickets = [...(Array.isArray(tickets) ? tickets : [])];
@@ -123,20 +118,25 @@ function App() {
         }
     };
 
-    if (user === undefined) return null;
-    if (!user) return <GoogleSignIn onSignIn={setUser} />;
+    if (appUser === undefined) return null;
     
-    if (registrationLoading) {
-        return <div className="min-h-screen bg-rasrang-black flex items-center justify-center font-typewriter text-white">Authenticating Profile...</div>;
+    if (!appUser) {
+        if (showRegistration) {
+            return (
+                <RegistrationScreen 
+                    onRegistered={(data) => {
+                        handleLogin(data);
+                        setShowRegistration(false);
+                    }} 
+                    onBack={() => setShowRegistration(false)}
+                />
+            );
+        }
+        return <LoginScreen onLogin={handleLogin} onShowRegister={() => setShowRegistration(true)} />;
     }
 
-    if (!isRegistered) {
-        return <RegistrationScreen user={user} onRegistered={(data) => {
-            setIsRegistered(true);
-            setUserType(data.type);
-            setUserData(data.data);
-        }} />;
-    }
+    const userData = appUser.data;
+    const userType = appUser.type;
 
     return (
         <main className="relative bg-rasrang-black selection:bg-rasrang-pink selection:text-white">
@@ -150,24 +150,24 @@ function App() {
                     removeFromCart={removeFromCart}
                     onCheckout={handleCheckout}
                     onViewTickets={handleViewTickets}
-                    user={user}
+                    user={userData} // Passing userData as 'user' for compatibility
                     userData={userData}
-                    onLogout={() => { signOutUser(); setUser(null); }}
+                    onLogout={handleLogout}
                 />
 
                 <div className="relative">
                     <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} userType={userType} /></ActWrapper>
-                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={user} userData={userData} /></ActWrapper>
+                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={userData} userData={userData} /></ActWrapper>
                     <ActWrapper id="act3"><TechProjection onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }} /></ActWrapper>
                     <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
                 </div>
 
-                <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} user={user} />
+                <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} user={userData} />
                 <BookTicketModal 
                     isOpen={isBookTicketOpen} 
                     onClose={() => setIsBookTicketOpen(false)} 
                     event={currentEvent} 
-                    user={user}
+                    user={userData}
                     userData={userData}
                 />
                 <TicketModal

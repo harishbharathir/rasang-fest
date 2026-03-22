@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcryptjs';
 import QRCode from 'qrcode';
 import { createBooking } from './models/Booking.js';
 import { createTicket, getTicketsByBookingId } from './models/Ticket.js';
@@ -72,10 +73,13 @@ async function initDatabase() {
             registerNo VARCHAR(100) NOT NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
             mobile VARCHAR(20) NOT NULL,
-            institution VARCHAR(255) NOT NULL,
+            password VARCHAR(255),
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
+    
+    // Ensure password column exists if table was already created
+    try { await pool.execute('ALTER TABLE students ADD COLUMN password VARCHAR(255) AFTER mobile'); } catch (e) {}
 
     await pool.execute(`
         CREATE TABLE IF NOT EXISTS faculty_passes (
@@ -87,12 +91,16 @@ async function initDatabase() {
             employeeId VARCHAR(100) NOT NULL,
             email VARCHAR(255) NOT NULL,
             mobile VARCHAR(20) NOT NULL,
+            password VARCHAR(255),
             eventsAttending TEXT NOT NULL,
             passCode VARCHAR(50) NOT NULL UNIQUE,
             qrCode LONGTEXT,
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
+    
+    // Ensure password column exists if table was already created
+    try { await pool.execute('ALTER TABLE faculty_passes ADD COLUMN password VARCHAR(255) AFTER mobile'); } catch (e) {}
 
     console.log('MySQL database and tables ready.');
 }
@@ -100,21 +108,25 @@ async function initDatabase() {
 // Faculty Pass registration
 app.post('/api/faculty-pass', async (req, res) => {
     try {
-        const { name, institution, department, designation, employeeId, email, mobile, eventsAttending } = req.body;
+        const { name, institution, department, designation, employeeId, email, mobile, password, eventsAttending } = req.body;
         if (!name || !institution || !email || !mobile) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
         const { default: pool } = await import('./db.js');
 
-        // Check for existing faculty pass by email
-        const [existing] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ?', [email]);
+        // Check for existing faculty pass by email or employeeId
+        const [existing] = await pool.execute('SELECT * FROM faculty_passes WHERE email = ? OR employeeId = ?', [email, employeeId]);
         if (existing.length > 0) {
-            return res.status(200).json(existing[0]);
+            return res.status(409).json({ message: 'User already exists' });
         }
 
         const id = randomId();
         const passCode = `FAC-26-${Math.floor(10000 + Math.random() * 90000)}`;
+        
+        // Use mobile as password if not provided explicitly
+        const passToHash = password || mobile;
+        const hashedPassword = await bcrypt.hash(passToHash, 10);
 
         // QR payload — encode all key details
         const qrPayload = JSON.stringify({ passCode, name, institution, department, designation, employeeId, email, eventsAttending });
@@ -126,12 +138,12 @@ app.post('/api/faculty-pass', async (req, res) => {
         });
 
         await pool.execute(
-            `INSERT INTO faculty_passes (id, name, institution, department, designation, employeeId, email, mobile, eventsAttending, passCode, qrCode)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [id, name, institution, department, designation, employeeId, email, mobile, eventsAttending, passCode, qrCode]
+            `INSERT INTO faculty_passes (id, name, institution, department, designation, employeeId, email, mobile, password, eventsAttending, passCode, qrCode)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [id, name, institution, department, designation, employeeId, email, mobile, hashedPassword, eventsAttending, passCode, qrCode]
         );
 
-        res.status(201).json({ passCode, qrCode, name });
+        res.status(201).json({ id, name, institution, department, designation, employeeId, email, mobile, eventsAttending, passCode, qrCode });
     } catch (error) {
         console.error('Faculty pass error:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -180,28 +192,68 @@ app.get('/api/user/:email', async (req, res) => {
 // Student registration
 app.post('/api/students', async (req, res) => {
     try {
-        const { name, registerNo, email, mobile, institution } = req.body;
+        const { name, registerNo, email, mobile, password, institution } = req.body;
         if (!name || !registerNo || !email || !mobile || !institution) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
         const { default: pool } = await import('./db.js');
 
-        const [existing] = await pool.execute('SELECT * FROM students WHERE email = ?', [email]);
+        const [existing] = await pool.execute('SELECT * FROM students WHERE email = ? OR registerNo = ?', [email, registerNo]);
         if (existing.length > 0) {
-            return res.status(200).json(existing[0]);
+            return res.status(409).json({ message: 'User already exists' });
         }
 
         const id = randomId();
+        const passToHash = password || mobile;
+        const hashedPassword = await bcrypt.hash(passToHash, 10);
+
         await pool.execute(
-            `INSERT INTO students (id, name, registerNo, email, mobile, institution)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [id, name, registerNo, email, mobile, institution]
+            `INSERT INTO students (id, name, registerNo, email, mobile, password, institution)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [id, name, registerNo, email, mobile, hashedPassword, institution]
         );
 
         res.status(201).json({ id, name, registerNo, email, mobile, institution });
     } catch (error) {
         console.error('Student registration error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// User login
+app.post('/api/login', async (req, res) => {
+    try {
+        const { identifier, password } = req.body;
+        if (!identifier || !password) {
+            return res.status(400).json({ message: 'Identifier and password required' });
+        }
+
+        const { default: pool } = await import('./db.js');
+
+        // Search students
+        const [students] = await pool.execute('SELECT * FROM students WHERE registerNo = ? OR email = ?', [identifier, identifier]);
+        if (students.length > 0) {
+            const user = students[0];
+            const match = await bcrypt.compare(password, user.password);
+            if (match) {
+                return res.status(200).json({ type: 'student', data: user });
+            }
+        }
+
+        // Search faculty
+        const [faculty] = await pool.execute('SELECT * FROM faculty_passes WHERE employeeId = ? OR email = ?', [identifier, identifier]);
+        if (faculty.length > 0) {
+            const user = faculty[0];
+            const match = await bcrypt.compare(password, user.password);
+            if (match) {
+                return res.status(200).json({ type: 'faculty', data: user });
+            }
+        }
+
+        res.status(401).json({ message: 'Invalid credentials' });
+    } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
