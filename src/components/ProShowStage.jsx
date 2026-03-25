@@ -6,7 +6,7 @@ import { useClapperSnap } from '../hooks/useClapperSnap';
 import curtainSound from '../assets/sounds/curtain.mp3';
 import useSound from 'use-sound';
 
-const ProShowStage = ({ onAddToCart }) => {
+const ProShowStage = ({ onProShow }) => {
     const { scrollYProgress } = useScroll();
     const { clapProps } = useClapperSnap();
     const [hasPlayedCurtain, setHasPlayedCurtain] = useState(false);
@@ -62,9 +62,9 @@ const ProShowStage = ({ onAddToCart }) => {
                             </p>
 
                             <button
-                                onClick={() => onAddToCart({ id: 'pro-show', name: 'GRAND FINALE PRO SHOW' })}
+                                onClick={onProShow}
                                 {...clapProps}
-                                className="group relative px-12 py-5 bg-white text-black font-marquee text-3xl hover:bg-rasrang-pink hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group relative px-12 py-5 bg-white text-black font-marquee text-3xl hover:bg-rasrang-pink hover:text-white transition-all duration-300"
                             >
                                 <span className="relative z-10">GET PRO PASS</span>
                                 <div className="absolute inset-0 bg-rasrang-yellow translate-x-3 translate-y-3 -z-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>

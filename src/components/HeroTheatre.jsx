@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import theatreEntrance from '../assets/theatre-entrance.jpg';
 
-const HeroTheatre = ({ onBook, userType }) => {
+const HeroTheatre = ({ onBook, onProShow, userType }) => {
     return (
         <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-rasrang-black">
             {/* Background Texture Placeholder */}
@@ -71,6 +71,39 @@ const HeroTheatre = ({ onBook, userType }) => {
                         GET FACULTY PASS
                     </button>
                 )}
+
+                <button
+                    onClick={onProShow}
+                    className="w-full mt-4 relative group overflow-hidden"
+                    style={{
+                        background: 'linear-gradient(135deg, #FFD700 0%, #FF8C00 50%, #FFD700 100%)',
+                        backgroundSize: '200% 200%',
+                        animation: 'shimmerBg 3s ease infinite',
+                        padding: '0',
+                        border: 'none',
+                        borderRadius: '2px',
+                    }}
+                >
+                    {/* Pulsing outer glow ring */}
+                    <span className="absolute inset-0 rounded-sm animate-ping bg-rasrang-yellow opacity-20 pointer-events-none" style={{ animationDuration: '2s' }}></span>
+
+                    {/* Shadow offset panel */}
+                    <span className="absolute inset-0 bg-rasrang-pink translate-x-2 translate-y-2 -z-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 rounded-sm"></span>
+
+                    {/* Shimmer sweep */}
+                    <span className="absolute inset-0 -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 bg-white/30 pointer-events-none"></span>
+
+                    {/* Button content */}
+                    <span className="relative z-10 flex flex-col items-center justify-center py-4 px-6 gap-1">
+                        <span className="flex items-center gap-2 font-marquee text-rasrang-black text-2xl leading-none tracking-wider">
+                            <span className="text-xl">✦</span>
+                            BOOK PRO SHOW
+                            <span className="text-xl">✦</span>
+                        </span>
+                        <span className="font-typewriter text-[10px] text-black/60 uppercase tracking-[0.4em]">2 NIGHTS · GRAND FINALE</span>
+                    </span>
+                </button>
+
             </motion.div>
 
 

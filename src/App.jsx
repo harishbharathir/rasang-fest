@@ -5,9 +5,9 @@ import TicketModal from './components/TicketModal';
 import BookTicketModal from './components/BookTicketModal';
 import CensorCertificate from './components/CensorCertificate';
 import HeroTheatre from './components/HeroTheatre';
-import CulturalWall from './components/CulturalWall';
-import TechProjection from './components/TechProjection';
+import EventGallery from './components/EventGallery';
 import ProShowStage from './components/ProShowStage';
+import ProShowModal from './components/ProShowModal';
 import GlobalElements from './components/GlobalElements';
 import FacultyPassModal from './components/FacultyPassModal';
 import RegistrationScreen from './components/RegistrationScreen';
@@ -22,6 +22,7 @@ function App() {
     const [cart, setCart] = useState([]);
     const [isFacultyPassOpen, setIsFacultyPassOpen] = useState(false);
     const [isBookTicketOpen, setIsBookTicketOpen] = useState(false);
+    const [isProShowOpen, setIsProShowOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
 
     useEffect(() => {
@@ -156,10 +157,16 @@ function App() {
                 />
 
                 <div className="relative">
-                    <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} userType={userType} /></ActWrapper>
-                    <ActWrapper id="act2"><CulturalWall onAddToCart={addToCart} user={userData} userData={userData} /></ActWrapper>
-                    <ActWrapper id="act3"><TechProjection onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }} /></ActWrapper>
-                    <ActWrapper id="act4"><ProShowStage onAddToCart={addToCart} /></ActWrapper>
+                    <ActWrapper id="act1"><HeroTheatre onBook={() => setIsFacultyPassOpen(true)} onProShow={() => setIsProShowOpen(true)} userType={userType} /></ActWrapper>
+                    <ActWrapper id="act2">
+                        <EventGallery 
+                            onAddToCart={addToCart} 
+                            user={userData} 
+                            userData={userData} 
+                            onBookTicket={(event) => { setCurrentEvent(event); setIsBookTicketOpen(true); }}
+                        />
+                    </ActWrapper>
+                    <ActWrapper id="act4"><ProShowStage onProShow={() => setIsProShowOpen(true)} /></ActWrapper>
                 </div>
 
                 <FacultyPassModal isOpen={isFacultyPassOpen} onClose={() => setIsFacultyPassOpen(false)} user={userData} />
@@ -167,6 +174,12 @@ function App() {
                     isOpen={isBookTicketOpen} 
                     onClose={() => setIsBookTicketOpen(false)} 
                     event={currentEvent} 
+                    user={userData}
+                    userData={userData}
+                />
+                <ProShowModal
+                    isOpen={isProShowOpen}
+                    onClose={() => setIsProShowOpen(false)}
                     user={userData}
                     userData={userData}
                 />
